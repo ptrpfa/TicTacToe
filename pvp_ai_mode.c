@@ -98,7 +98,7 @@ int choosemode(){       // choose pvp or player vs ai
         printf("\nPlayer vs Player (1) or Player vs AI (2)\n");
         scanf("%d", &user_input);       //Get the user input 
         if(user_input==1){
-               printf("You Have Chosen PVP Mode");
+               printf("You Have Chosen PVP Mode\n");
                undo = 0;
         }else if(user_input==2){
             printf("You Have Chosen Player vs AI Mode");
