@@ -18,7 +18,6 @@ int ButtonPos[9][2] = {{0,0},{20,0},{40,0},
 static int player = 1; //tracks current player
 int board[9]; //All element will be 0 at start
 
-const char * array[3] = {"2 Player", "1 VS Computer(Minimax)", "1 VS Computer(ML)"};
 int checkPlayerData(char n){
     if('X' == n){
         return 1; //Player 1
