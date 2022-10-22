@@ -4,45 +4,105 @@ CSC1103 Mini Project
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Meow Meow Meow, for the GUI version do download the TicTacToe.c file
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+-GTK4 requried
+-MSYS2 required (the one used to install your MINGW_64)
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+_Below is the instruction for installing GTk4._
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Search for 'MSYS2 MSYS' in your computer.
+2. Run the application.
+3. In the MSYS2 command prompt, enter the following
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   pacman -S mingw-w64-x86_64-gtk4
    ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+3. Install the GTK4 packages and type 'Y' for everything.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+_Search and edit your 'c_cpp_properities.json file' to add GTK libs
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
+1. In Visual Studios, use following command for Window Laptop.
+   ```sh
+   Ctrl+Shift+P
+   ```
+2. Search 'C/C++: Edit Configurations (UI)' and click on it.
+3. Replace your "includePath" with the below.
+    ```sh
+    "includePath": [
+      "${workspaceFolder}/**",
+      "C:/msys64/mingw64/include/gtk-4.0",
+      "C:/msys64/mingw64/include/pango-1.0",
+      "C:/msys64/mingw64/include",
+      "C:/msys64/mingw64/include/glib-2.0",
+      "C:/msys64/mingw64/lib/glib-2.0/include",
+      "C:/msys64/mingw64/include/harfbuzz",
+      "C:/msys64/mingw64/include/freetype2",
+      "C:/msys64/mingw64/include/libpng16",
+      "C:/msys64/mingw64/include/fribidi",
+      "C:/msys64/mingw64/include/cairo",
+      "C:/msys64/mingw64/include/lzo",
+      "C:/msys64/mingw64/include/pixman-1",
+      "C:/msys64/mingw64/include/gdk-pixbuf-2.0",
+      "C:/msys64/mingw64/include/graphene-1.0",
+      "C:/msys64/mingw64/lib/graphene-1.0/include"
+    ], 
+    ```
+_Edit your 'task.json' folder to include GTK4 Libs_
+1. Open your '.vscode' folder in Visual Studio, under your explorer tab.
+2. CLick on 'task.json'
+3. Replace your "args" with the following 
+    ```sh
+    "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "${file}",
+        "-o",
+        "${fileDirname}\\${fileBasenameNoExtension}.exe",
+        "-IC:/msys64/mingw64/include/gtk-4.0",
+        "-IC:/msys64/mingw64/include/pango-1.0",
+        "-IC:/msys64/mingw64/include",
+        "-IC:/msys64/mingw64/include/glib-2.0",
+        "-IC:/msys64/mingw64/lib/glib-2.0/include",
+        "-IC:/msys64/mingw64/include/harfbuzz",
+        "-IC:/msys64/mingw64/include/freetype2",
+        "-IC:/msys64/mingw64/include/libpng16",
+        "-IC:/msys64/mingw64/include/fribidi",
+        "-IC:/msys64/mingw64/include/cairo",
+        "-IC:/msys64/mingw64/include/lzo",
+        "-IC:/msys64/mingw64/include/pixman-1",
+        "-IC:/msys64/mingw64/include/gdk-pixbuf-2.0",
+        "-IC:/msys64/mingw64/include/graphene-1.0",
+        "-IC:/msys64/mingw64/lib/graphene-1.0/include",
+        "-mfpmath=sse",
+        "-msse",
+        "-msse2",
+        "-LC:/msys64/mingw64/lib",
+        "-lgtk-4",
+        "-lpangowin32-1.0",
+        "-lpangocairo-1.0",
+        "-lpango-1.0",
+        "-lharfbuzz",
+        "-lgdk_pixbuf-2.0",
+        "-lcairo-gobject",
+        "-lcairo",
+        "-lgraphene-1.0",
+        "-lgio-2.0",
+        "-lgobject-2.0",
+        "-lglib-2.0",
+        "-lintl"
+    ],
+    ```
+    
+_Now you should run without error
+_
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
