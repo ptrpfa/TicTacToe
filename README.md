@@ -102,7 +102,7 @@ _Edit your 'task.json' folder to include GTK4 Libs_
     ],
     ```
     
-_Now you should run without error
-_
+_Now you should run without error_
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
