@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+// Symbol for each player (X or O)
 char gridChar(int i) {
 
     switch(i) {
@@ -16,6 +17,7 @@ char gridChar(int i) {
 
 }
 
+// Draw board
 void draw(int b[9]) {
 
     printf(" %c | %c | %c\n",gridChar(b[0]),gridChar(b[1]),gridChar(b[2]));
@@ -26,6 +28,7 @@ void draw(int b[9]) {
 
 }
 
+// Check winner (0 for no wins, X/O for wins)
 int win(const int board[9]) {
     //determines if a player has won, returns 0 otherwise.
     unsigned wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}}; //Positions to win
@@ -40,6 +43,7 @@ int win(const int board[9]) {
     return 0; //Else no one win returns '0'
 }
 
+// Player 1 move
 void playerMove(int board[9]) {
     int move = 0;
     int redo = 0;
@@ -64,6 +68,7 @@ void playerMove(int board[9]) {
     } while ( redo == 1);
 }
 
+// Player 2 move
 void player2Move(int board[9]){
     int move = 0;
     int redo = 0;
@@ -88,6 +93,7 @@ void player2Move(int board[9]){
     }while(redo == 1); //Make sure player choose the grid else reloop    
 }
 
+// Program entrypoint
 int main() {
     int board[9] = {0,0,0,0,0,0,0,0,0}; // Initialise, the board, 0 is empty string ' '
     int player = 0; // Player 0 starts first
