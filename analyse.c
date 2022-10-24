@@ -11,12 +11,50 @@ int main() {
     stratifyDataset();
     
     /* Two Player Mode */
+    // // Initialise current player and board status
+    // int current_player = 1; // Players: Player 1 or 2
+    // int board_status = 0;
+    // printBoard(board_state);
+    // // Loop through entire board
+    // for (int i = 0; i < BOARDSIZE; i++){
+    //     // Get player's input
+    //     playerInput(current_player);
+    //     // Get current board status
+    //     board_status = getBoardStatus(board_state);
+    //     if (board_status != 0){
+    //         break;
+    //     }
+    //     // Switch to next player after current player's turn
+    //     if (current_player == 1){
+    //         current_player = 2;
+    //     }
+    //     else {
+    //         current_player = 1;
+    //     }
+    // }
+
+    /* One Player Mode */
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
     int board_status = 0;
     printBoard(board_state);
     // Loop through entire board
-    for (int i = 0; i < BOARDSIZE; i++){
+    for (int i = 0; i < BOARDSIZE; i++) {
+        // Get ML model's input
+        modelInput(board_state, model_weights, current_player);
+        // Get current board status
+        board_status = getBoardStatus(board_state);
+        if (board_status != 0){
+            break;
+        }
+        // Switch to next player after ML model's turn
+        if (current_player == 1){
+            current_player = 2;
+        }
+        else {
+            current_player = 1;
+        }
+
         // Get player's input
         playerInput(current_player);
         // Get current board status
@@ -24,7 +62,7 @@ int main() {
         if (board_status != 0){
             break;
         }
-        // Switch to next player after current player's turn
+        // Switch to ML model's turn
         if (current_player == 1){
             current_player = 2;
         }
@@ -32,6 +70,7 @@ int main() {
             current_player = 1;
         }
     }
+
     // Print results
     if (board_status == 0){
         printf("\nDRAW!");
@@ -43,7 +82,6 @@ int main() {
         printf("\nPLAYER 2 WINS!");
     }
 
-    getBoardFeatures(board_state, 1);
     return 0;
 
 }
@@ -329,8 +367,80 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
     board_features[3] = x3;
     board_features[4] = x4;
     board_features[5] = x5;
-    board_features[6] = x6;
+    board_features[6] = x6; // Consider altering for negative values (ie -1 for loss, 0 for draw, 1 for win)
 }
+
+// Function to evaluate and assign a value to a given board state
+float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]) {
+    float board_value = 0;
+    for (int i = 0; i < NO_FEATURES; i++) {
+        board_value += features[i] * weights[i];
+    }
+    return board_value;
+}
+
+// Function to reset the array of possible moves for the ML model to take
+void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]) {
+    for (int i = 0; i < BOARDSIZE; i++) {
+        for (int j = 0; j < BOARDSIZE + 1; j++) {
+            if (j == 9) {
+                // Set move index to -1
+                moves[i][9] = -1;
+            }
+            else {
+                // Reset
+                moves[i][j] = 0;
+            }
+        }
+    }
+}
+
+// Function for ML model to evaluate the best possible move and make it
+void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int playerNo) {
+    // Initialise counter and tracking variables
+    int move_index = 0, best_move = 0;
+    float current_score = -1, best_score = -1;
+    // Reset array of possible moves for the ML model to take
+    resetPossibleMoves(possible_moves);
+    // Populate 2D array containing all possible moves
+    for (int i = 0; i < BOARDSIZE; i++) {
+        // Check for empty cells
+        if (gameState[i] == 0) {
+            // Make a copy of the current board's state
+            for (int j = 0; j < BOARDSIZE; j++) {
+                possible_moves[move_index][j] = gameState[j];
+            }
+            // Set new move
+            possible_moves[move_index][i] = playerNo;
+            // Save index of the new move
+            possible_moves[move_index][9] = i;
+            // Increment move index
+            move_index++;
+        }
+    }
+    // Iterate through each possible move
+    for (int i = 0; i < BOARDSIZE; i++) {
+        // Check if there are any valid possible moves
+        if (possible_moves[i][9] != -1) {
+            // Get feature values for the current move
+            getBoardFeatures(possible_moves[i], playerNo);
+            // Get the score for the current move
+            current_score = evaluateBoard(board_features, model_weights);
+            // Evaluate move
+            if (best_score < current_score) {
+                best_score = current_score;
+                best_move = possible_moves[i][9];
+            }
+        }
+        else {
+            // Break out of the loop if there are no more possible moves
+            break;
+        }
+    }
+    // Set the best move
+    board_state[best_move] = playerNo;
+    printBoard(board_state);
+}                                          
 
 /* Game Functions */
 // Function to print current board state
