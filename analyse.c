@@ -15,7 +15,7 @@ int main() {
     int current_player = 1; // Players: Player 1 or 2
     int board_status = 0;
     printBoard(board_state);
-    // Loop through entire board size
+    // Loop through entire board
     for (int i = 0; i < BOARDSIZE; i++){
         // Get player's input
         playerInput(current_player);
@@ -24,7 +24,7 @@ int main() {
         if (board_status != 0){
             break;
         }
-        // Change to the current player to the next player
+        // Switch to next player after current player's turn
         if (current_player == 1){
             current_player = 2;
         }
@@ -43,6 +43,7 @@ int main() {
         printf("\nPLAYER 2 WINS!");
     }
 
+    getBoardFeatures(board_state, 1);
     return 0;
 
 }
@@ -178,6 +179,157 @@ void stratifyDataset() {
             draw_index++;
         }
     }
+}
+
+// Function to get the feature values for the current board's state
+void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
+    /* 
+        Board features (x0 to x6):
+        x0: Constant value of 1
+        x1: Number of rows, columns and diagonals with 2 of the selected player's pieces and 1 empty cell
+        x2: Number of rows, columns and diagonals with 2 of the opposing player's pieces and 1 empty cell
+        x3: Indicates if the selected player's piece is in the center cell
+        x4: Number of the selected player's pieces that are in the corner cells
+        x5: Number of rows, columns and diagonals with 1 of the selected player's piece and 2 empty cells
+        x6: Number of rows, columns and diagonals with 3 of the selected player's pieces (win detection)
+    */
+    // Initialise feature values
+    int x0 = 1, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0;
+    // Create a 2D array from the current board's state
+    int current_board[3][3];
+    current_board[0][0] = gameState[0];
+    current_board[0][1] = gameState[1];
+    current_board[0][2] = gameState[2];
+    current_board[1][0] = gameState[3];
+    current_board[1][1] = gameState[4];
+    current_board[1][2] = gameState[5];
+    current_board[2][0] = gameState[6];
+    current_board[2][1] = gameState[7];
+    current_board[2][2] = gameState[8];
+    // Loop through each board row
+    for (int row = 0; row < 3; row++) {
+        // Initialise counter variables
+        int row_empty = 0, row_player = 0, row_oppose = 0, col_empty = 0, col_player = 0, col_oppose = 0;
+        // Loop through each board column
+        for (int col = 0; col < 3; col++) {
+            // Obtain row counts
+            if (current_board[row][col] == playerNo) {
+                row_player++;
+            }
+            else if (current_board[row][col] == 0) {
+                row_empty++;
+            }
+            else {
+                row_oppose++;
+            }
+            // Obtain column counts
+            if (current_board[col][row] == playerNo) {
+                col_player++;
+            }
+            else if (current_board[col][row] == 0) {
+                col_empty++;
+            }
+            else {
+                col_oppose++;
+            }
+            // Check x3 and x4 conditions
+            if (row == col) {
+                if (row == 1 && col == 1) {
+                    // Checking for center piece
+                    if (current_board[row][col] == playerNo){
+                        x3++;
+                    }
+                }
+                else {
+                    // Checking for corner piece
+                    if (current_board[row][col] == playerNo){
+                        x4++;
+                    }
+                }
+            }
+            if ((row + col) == 2) {
+                if (row != 1 && col != 1) {
+                    // Checking for corner piece
+                    if (current_board[row][col] == playerNo){
+                        x4++;
+                    }
+                }
+            }
+            // Check for x1 conditions
+            if (row_player == 2 && row_empty == 1) {
+                x1++;
+            }
+            if (col_player == 2 && col_empty == 1) {
+                x1++;
+            }
+            // Check for x2 conditions
+            if (row_oppose == 2 && row_empty == 1) {
+                x2++;
+            }
+            if (col_oppose == 2 && col_empty == 1) {
+                x2++;
+            }
+            // Check for x5 conditions
+            if (row_player == 1 && row_empty == 2) {
+                x5++;
+            }
+            if (col_player == 1 && col_empty == 2) {
+                x5++;
+            }
+            // Check for x6 conditions
+            if (row_player == 3) {
+                x6++;
+            }
+            if (col_player == 3) {
+                x6++;
+            }
+        }
+    }
+    // Loop to check diagonals
+    for (int i = 0; i < 2; i++) {
+        // Initialise counter variables
+        int diagonal_empty = 0, diagonal_player = 0, diagonal_oppose = 0, temp_value = 0;
+        for (int j = 0; j < 3; j++) { 
+            // Set temporary value for comparison
+            if (i == 0) {
+                temp_value = current_board[2 - j][j];
+            }
+            else {
+                temp_value = current_board[j][j];
+            }
+            // Check diagonals
+            if (temp_value == playerNo) {
+                diagonal_player++;
+            }
+            else if (temp_value == 0) {
+                diagonal_empty++;
+            }
+            else {
+                diagonal_oppose++;
+            }
+        }
+        // Check for x1, x2, x5 and x6 conditions
+        if (diagonal_player == 2 && diagonal_empty == 1) {
+            x1++;
+        }
+        if (diagonal_oppose == 2 && diagonal_empty == 1) {
+            x2++;
+        }
+        if (diagonal_player == 1 && diagonal_empty == 2) {
+            x5++;
+        }
+        if (diagonal_player == 3) {
+            x6++;
+        }
+    }
+    // Set values of the current board's features
+    board_features[0] = x0;
+    board_features[1] = x1;
+    board_features[2] = x2;
+    board_features[3] = x3;
+    board_features[4] = x4;
+    board_features[5] = x5;
+    board_features[6] = x6;
 }
 
 /* Game Functions */

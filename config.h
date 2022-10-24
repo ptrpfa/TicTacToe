@@ -24,13 +24,19 @@ int dataset_draws[DATASET_DRAWS][BOARDSIZE + 1];        // Array containing only
 int training_dataset[TRAINING_SIZE][BOARDSIZE + 1];     // Training dataset
 int test_dataset[TEST_SIZE][BOARDSIZE + 1];             // Testing dataset
 
+int board_features[7];                                  // Array containing the feature values for the current board state
+float linear_regression_weights[7];                     // Array containing weights for each feature
+
 int board_state[BOARDSIZE];                                                                 // Array containing the current board state
 int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};   // Array containing the legal board configurations that qualify as a win
 
 // Function prototypes
-void initialiseDataset();       // Function to initialise dataset (read dataset file and populate dataset array)
-void stratifyDataset();         // Function to split dataset into training and testing sets (80:20), whilst preserving the distribution of total wins/losses/draws
+/* Machine Learning Functions */
+void initialiseDataset();                                           // Function to initialise dataset (read dataset file and populate dataset array)
+void stratifyDataset();                                             // Function to split dataset into training and testing sets (80:20), whilst preserving the distribution of total wins/losses/draws
+void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);      // Function to get the feature values for the current board's state
 
+/* Game Functions */
 void printBoard(int gameState[BOARDSIZE]);          // Function to print current board state
 int getBoardStatus(int gameState[BOARDSIZE]);       // Function to get the current board's status (win/lose/draw)
 void playerInput(int playerNo);                     // Function to get player's input

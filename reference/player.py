@@ -72,6 +72,7 @@ class Player:
             # xx_rows = number of row cells that are empty/occupied by self/enemy
             # xx_columns = number of column cells that are empty/occupied by self/enemy
 
+            # loop through each row
             for j in range(3):
                 # find number of row cells
                 if board[i][j] == 0:
@@ -94,17 +95,6 @@ class Player:
                 elif board[j][i] == enemy_color:
                     # find number of column cells occupied by enemy
                     enemy_columns += 1
-
-
-            '''
-            x0 = 1  # Constant
-            x1 = 0  # Number of rows/columns/diagonals with two of our own pieces and one emtpy field
-            x2 = 0  # Number of rows/columns/diagonals with two of opponent's pieces and one empty field
-            x3 = 0  # Is our own piece on the center field
-            x4 = 0  # Number of own pieces in corners
-            x5 = 0  # Number of rows/columns/diagonals with one own piece and two empty fields
-            x6 = 0  # Number of rows/columns/diagonals with three own pieces
-            '''
 
             if own_rows == 2 and empty_rows == 1:
                 x1 += 1
@@ -130,17 +120,20 @@ class Player:
             own_diagonal = 0
             enemy_diagonal = 0
             empty_diagonal = 0
+
             for j in range(3):
                 if i == 0:
                     diagonal = board[2-j][j]
                 else:
                     diagonal = board[j][j]
+                    
                 if diagonal == self.color:
                     own_diagonal += 1
                 if diagonal == 0:
                     empty_diagonal += 1
                 if diagonal == enemy_color:
                     enemy_diagonal += 1
+
             if own_diagonal == 2 and empty_diagonal == 1:
                 x1 += 1
             if enemy_diagonal == 2 and empty_diagonal == 1:
