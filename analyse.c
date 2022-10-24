@@ -9,11 +9,45 @@ int main() {
     // Dataset pre-processing
     initialiseDataset();
     stratifyDataset();
+    
+    /* Two Player Mode */
+    // Initialise current player and board status
+    int current_player = 1; // Players: Player 1 or 2
+    int board_status = 0;
+    printBoard(board_state);
+    // Loop through entire board size
+    for (int i = 0; i < BOARDSIZE; i++){
+        // Get player's input
+        playerInput(current_player);
+        // Get current board status
+        board_status = getBoardStatus(board_state);
+        if (board_status != 0){
+            break;
+        }
+        // Change to the current player to the next player
+        if (current_player == 1){
+            current_player = 2;
+        }
+        else {
+            current_player = 1;
+        }
+    }
+    // Print results
+    if (board_status == 0){
+        printf("\nDRAW!");
+    }
+    else if (board_status == 1){
+        printf("\nPLAYER 1 WINS!");
+    }
+    else {
+        printf("\nPLAYER 2 WINS!");
+    }
 
     return 0;
 
 }
 
+/* Machine Learning Functions */
 // Function to initialise dataset (read dataset file and populate dataset array)
 void initialiseDataset() { 
     // Initialise file pointer
@@ -64,23 +98,13 @@ void initialiseDataset() {
         }
         // Close file pointer
         fclose(dataset_file);
-        // Board configurations for a win
-        int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};   
         // Iterate through dataset to further categorise outcomes into draws and losses
         for (int i = 0; i < DATASET_SIZE; i++){
-            for (int j = 0; j < 8; j++){
-                if (dataset[i][board_wins[j][0]] != 0 && dataset[i][board_wins[j][0]] == dataset[i][board_wins[j][1]] && dataset[i][board_wins[j][0]] == dataset[i][board_wins[j][2]]){ 
-                    dataset[i][9] = dataset[i][board_wins[j][2]];           // Set to 1 if X won, -1 if X lost
-                    break;                                                  // Break out of loop once a win is detected
-                }
-                else{
-                    dataset[i][9] = 0;  // Set to 0 if outcome is a draw
-                }
-            }
+            dataset[i][9] = getBoardStatus(dataset[i]);
         }
-        // Populate array containing only wins, draws and losses
+        // Populate arrays containing only wins, draws and losses
         int win_index = 0, draw_index = 0, lose_index = 0;
-        for (int i = 0; i < DATASET_SIZE; i++){
+        for (int i = 0; i < DATASET_SIZE; i++) {
             if (dataset[i][9] == 1){
                 for(int j = 0; j <= BOARDSIZE; j++){
                     dataset_wins[win_index][j] = dataset[i][j];
@@ -100,17 +124,6 @@ void initialiseDataset() {
                 draw_index++;
             }
         }
-
-        // TEMPORARY PRINT
-        // for (int i = 0; i < 700; i++){
-        //     printf("\nLine %d:\n", i + 1);
-        //     printf(" %d | %d | %d\n",dataset[i][0],dataset[i][1],dataset[i][2]);
-        //     printf("---+---+---\n");
-        //     printf(" %d | %d | %d\n",dataset[i][3],dataset[i][4],dataset[i][5]);
-        //     printf("---+---+---\n");
-        //     printf(" %d | %d | %d\n",dataset[i][6],dataset[i][7],dataset[i][8]);
-        //     printf("Outcome: %d", dataset[i][9]);
-        // }
     }
 }
 
@@ -165,4 +178,56 @@ void stratifyDataset() {
             draw_index++;
         }
     }
+}
+
+/* Game Functions */
+// Function to print current board state
+void printBoard(int gameState[BOARDSIZE]) {
+    printf("  %2d  |  %2d  |  %2d\n",gameState[0],gameState[1],gameState[2]);
+    printf("------+------+------\n");
+    printf("  %2d  |  %2d  |  %2d\n",gameState[3],gameState[4],gameState[5]);
+    printf("------+------+------\n");
+    printf("  %2d  |  %2d  |  %2d\n\n",gameState[6],gameState[7],gameState[8]);
+}
+
+// Function to get the current board's status (win/lose/draw)
+int getBoardStatus(int gameState[BOARDSIZE]) {
+    // Default board status is 0 (draw)
+    int board_status = 0;
+    // Loop through each legal win configuration
+    for (int i = 0; i < 8; i++) {
+        if (gameState[board_wins[i][0]] != 0 && gameState[board_wins[i][0]] == gameState[board_wins[i][1]] && gameState[board_wins[i][0]] == gameState[board_wins[i][2]]) { 
+            board_status = gameState[board_wins[i][2]]; // Set board status to winning player
+            return board_status;                        // Return board status immediately once a win is found
+        }
+    }
+    // Return default board status if no wins are found
+    return board_status;
+}
+
+// Function to get player's input
+void playerInput(int playerNo){
+    int player_move = 0;
+    printf("\nPlayer %d's turn!", playerNo);
+    do {
+        printf("\nSelect the position (0 to 8) to place your piece: ");
+        scanf("%d", &player_move);
+
+        // Check if move is legal
+        if (player_move < 0 || player_move >= BOARDSIZE) {
+            printf("\nIllegal move!");
+            continue;
+        }
+        // Check if current cell selected is occupied
+        else if (board_state[player_move] != 0) { 
+            printf("\nPosition %d is already occupied!", player_move);
+            continue;
+        }
+        // Set current move
+        else {
+            board_state[player_move] = playerNo;
+            printBoard(board_state);
+            break;
+        }
+    } while (1);
 }
