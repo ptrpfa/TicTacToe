@@ -33,6 +33,32 @@ int main() {
     //     }
     // }
 
+    /* Train ML Model */
+    int computer_player = 1;
+    float predicted_score = -1, actual_score = 0;
+    for (int i = 0; i < TRAINING_SIZE; i++) {
+        
+        printf("\nTraining %d:", i);
+        for(int j = 0; j < NO_FEATURES; j++){
+            printf("\nw%d = %f", j, model_weights[j]);
+        }
+
+        // Get current training board's features
+        getBoardFeatures(training_dataset[i], computer_player);
+        // Compute predicted score for current training board
+        predicted_score = evaluateBoard(board_features, model_weights);
+        // Get actual score for current training board
+        actual_score = training_dataset[i][9];
+        // Update ML model's weights
+        updateWeights(learningRate, board_features, model_weights, actual_score, predicted_score);
+
+        printf("\nAfter Training %d:", i);
+        for(int j = 0; j < NO_FEATURES; j++){
+            printf("\nw%d = %f", j, model_weights[j]);
+        }
+        printf("\n");
+    }
+
     /* One Player Mode */
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
@@ -400,6 +426,7 @@ void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int player
     // Initialise counter and tracking variables
     int move_index = 0, best_move = 0;
     float current_score = -1, best_score = -1;
+    printf("\nPlayer %d's turn!\n", playerNo);
     // Reset array of possible moves for the ML model to take
     resetPossibleMoves(possible_moves);
     // Populate 2D array containing all possible moves
@@ -441,6 +468,14 @@ void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int player
     board_state[best_move] = playerNo;
     printBoard(board_state);
 }                                          
+
+// Function to update the weights for the ML model features
+void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated) {
+    for (int i = 0; i < NO_FEATURES; i++) {
+        // Update each weight
+	    weights[i] = weights[i] + learningConstant * (target_actual - target_estimated) * features[i];
+    }
+}
 
 /* Game Functions */
 // Function to print current board state
