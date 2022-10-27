@@ -1,4 +1,56 @@
-button{
-    color: magenta;
+window{
+    background: black;
 }
-  
+
+.button1{
+    background: black;
+    color: white;
+    font-size: 25pt;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+    border-width: 3px;
+}
+.button2{
+    background: black;
+    color: white;
+    font-size: 25pt;
+    border-right: none;
+    border-top: none;
+    border-width: 3px;
+}
+.button3{
+    background: black;
+    color: white;
+    font-size: 25pt;
+    border: none;
+}
+.button4{
+    background: black;
+    color: white;
+    font-size: 25pt;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    border-width: 3px;
+}
+
+.restart_btn{
+    background: black;
+    color: white;
+    font-size: 12pt;
+
+}
+
+.quit_btn{
+    background: black;
+    color: white;
+    font-size: 12pt;
+
+}
+
+label{
+    color: white;
+    font-size: 15pt;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
