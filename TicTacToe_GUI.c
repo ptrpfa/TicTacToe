@@ -186,12 +186,15 @@ void Restart(){
 }
 
 static void Combo (GtkWidget* widget, gpointer *data){
-    // char* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
-    // printf("%c", *text);
-    // guint itemPos = gtk_drop_down_get_selected(GTK_DROP_DOWN(widget));
-    // char *hello = array[itemPos];
-    // printf("%c", *hello);
-    printf("hello");
+    GtkComboBox *combo_box = widget;
+
+    if (gtk_combo_box_get_active (combo_box) != 0) {
+        gchar *mode = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+        g_print ("You chose %s\n", mode);
+        g_free (mode);
+    }
+
+
 }
 
 void SettingDesign(){
@@ -217,6 +220,7 @@ void SettingDesign(){
     dropMenu = gtk_combo_box_text_new();
     
     //Populate the Menu
+    gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "Please Select a Game Mode");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "2 Player");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "1 VS Computer(Minimax)");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "1 VS Computer(ML)");
