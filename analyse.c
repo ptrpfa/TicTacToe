@@ -1,111 +1,111 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "config.h"
 
 // Program entrypoint
 int main() {
 
+    // Get user mode
+    int mode = 0;
+    do {
+        printf("\nSelect a game mode:\n(1) Two player mode\n(2) Play against computer\nEnter your choice: ");
+        scanf("%d", &mode);
+    } while (mode != 1 && mode != 2);
+
+    /* Train ML Model */
     // Dataset pre-processing
     initialiseDataset();
     stratifyDataset();
-    
-    /* Two Player Mode */
-    // // Initialise current player and board status
-    // int current_player = 1; // Players: Player 1 or 2
-    // int board_status = 0;
-    // printBoard(board_state);
-    // // Loop through entire board
-    // for (int i = 0; i < BOARDSIZE; i++){
-    //     // Get player's input
-    //     playerInput(current_player);
-    //     // Get current board status
-    //     board_status = getBoardStatus(board_state);
-    //     if (board_status != 0){
-    //         break;
-    //     }
-    //     // Switch to next player after current player's turn
-    //     if (current_player == 1){
-    //         current_player = 2;
-    //     }
-    //     else {
-    //         current_player = 1;
-    //     }
-    // }
+    trainModel(training_dataset, model_weights);
+    // test model here
 
-    /* Train ML Model */
-    int computer_player = 1;
-    float predicted_score = -1, actual_score = 0;
-    for (int i = 0; i < TRAINING_SIZE; i++) {
-        
-        printf("\nTraining %d:", i);
-        for(int j = 0; j < NO_FEATURES; j++){
-            printf("\nw%d = %f", j, model_weights[j]);
-        }
-
-        // Get current training board's features
-        getBoardFeatures(training_dataset[i], computer_player);
-        // Compute predicted score for current training board
-        predicted_score = evaluateBoard(board_features, model_weights);
-        // Get actual score for current training board
-        actual_score = training_dataset[i][9];
-        // Update ML model's weights
-        updateWeights(learningRate, board_features, model_weights, actual_score, predicted_score);
-
-        printf("\nAfter Training %d:", i);
-        for(int j = 0; j < NO_FEATURES; j++){
-            printf("\nw%d = %f", j, model_weights[j]);
-        }
-        printf("\n");
-    }
-
-    /* One Player Mode */
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
-    int board_status = 0;
-    printBoard(board_state);
-    // Loop through entire board
-    for (int i = 0; i < BOARDSIZE; i++) {
-        // Get ML model's input
-        modelInput(board_state, model_weights, current_player);
-        // Get current board status
-        board_status = getBoardStatus(board_state);
-        if (board_status != 0){
-            break;
-        }
-        // Switch to next player after ML model's turn
-        if (current_player == 1){
-            current_player = 2;
-        }
-        else {
-            current_player = 1;
-        }
+    int board_status = 9; // Board Status: 1 or 2 if player won, 0 if draw, 9 if still in progress/not completed
 
-        // Get player's input
-        playerInput(current_player);
-        // Get current board status
-        board_status = getBoardStatus(board_state);
-        if (board_status != 0){
+    // Check user mode selected
+    switch (mode) {
+        case 1:
+            /* Two Player Mode */
+            printBoard(board_state);
+            // Loop through entire board
+            for (int i = 0; i < BOARDSIZE; i++){
+                // Get player's input
+                playerInput(current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    break;
+                }
+                // Switch to next player after current player's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+            }
+            // Print results
+            if (board_status == 0){
+                printf("\nDRAW!");
+            }
+            else if (board_status == 1){
+                printf("\nPLAYER 1 WINS!");
+            }
+            else {
+                printf("\nPLAYER 2 WINS!");
+            }
+            // Break out of case
             break;
-        }
-        // Switch to ML model's turn
-        if (current_player == 1){
-            current_player = 2;
-        }
-        else {
-            current_player = 1;
-        }
-    }
+        case 2:
+            /* One Player Mode */
+            printBoard(board_state);
+            // Loop through entire board
+            for (int i = 0; i < BOARDSIZE; i++) {
+                // Get ML model's input
+                modelInput(board_state, model_weights, current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    break;
+                }
+                // Switch to next player after ML model's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
 
-    // Print results
-    if (board_status == 0){
-        printf("\nDRAW!");
-    }
-    else if (board_status == 1){
-        printf("\nPLAYER 1 WINS!");
-    }
-    else {
-        printf("\nPLAYER 2 WINS!");
+                // Get player's input
+                playerInput(current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    break;
+                }
+                // Switch to ML model's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+            }
+            // Print results
+            if (board_status == 0){
+                printf("\nDRAW!");
+            }
+            else if (board_status == 1){
+                printf("\nPLAYER 1 WINS!");
+            }
+            else {
+                printf("\nPLAYER 2 WINS!");
+            }
+            // Break out of case
+            break;
     }
 
     return 0;
@@ -252,8 +252,8 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
         x0: Constant value of 1
         x1: Number of rows, columns and diagonals with 2 of the selected player's pieces and 1 empty cell
         x2: Number of rows, columns and diagonals with 2 of the opposing player's pieces and 1 empty cell
-        x3: Indicates if the selected player's piece is in the center cell
-        x4: Number of the selected player's pieces that are in the corner cells
+        x3: Number of the selected player's pieces in the center cell (Indicates if the selected player's piece is in the center cell or not, 0 or 1)
+        x4: Number of the selected player's pieces that are in the corner cells (0 to 4)
         x5: Number of rows, columns and diagonals with 1 of the selected player's piece and 2 empty cells
         x6: Number of rows, columns and diagonals with 3 of the selected player's pieces (win detection)
     */
@@ -297,7 +297,7 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
                 col_oppose++;
             }
             // Check x3 and x4 conditions
-            if (row == col) {
+            if (row == col) { // Check top-right to bottom-left diagonal
                 if (row == 1 && col == 1) {
                     // Checking for center piece
                     if (current_board[row][col] == playerNo){
@@ -311,7 +311,7 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
                     }
                 }
             }
-            if ((row + col) == 2) {
+            if ((row + col) == 2) { // Check bottom-left to top-right diagonal
                 if (row != 1 && col != 1) {
                     // Checking for corner piece
                     if (current_board[row][col] == playerNo){
@@ -356,9 +356,11 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
         for (int j = 0; j < 3; j++) { 
             // Set temporary value for comparison
             if (i == 0) {
+                // Check bottom-left to top-right diagonal
                 temp_value = current_board[2 - j][j];
             }
             else {
+                // Check top-left to bottom-right diagonal
                 temp_value = current_board[j][j];
             }
             // Check diagonals
@@ -393,7 +395,7 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo) {
     board_features[3] = x3;
     board_features[4] = x4;
     board_features[5] = x5;
-    board_features[6] = x6; // Consider altering for negative values (ie -1 for loss, 0 for draw, 1 for win)
+    board_features[6] = x6;
 }
 
 // Function to evaluate and assign a value to a given board state
@@ -402,6 +404,18 @@ float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]) {
     for (int i = 0; i < NO_FEATURES; i++) {
         board_value += features[i] * weights[i];
     }
+
+    // Ternary classification (discretize continuous values generated by regression model)
+    // if (board_value > 1){
+    //     board_value = 1; // If board value is more than 1, classify as 1
+    // }
+    // else if (board_value < -1){
+    //     board_value = -1; // If board value is less than -1, classify as -1
+    // }
+    // else {
+    //     board_value = round(board_value); // If board value x, is between -1 < x < 1, round it off to the nearest integer
+    // }
+
     return board_value;
 }
 
@@ -421,11 +435,48 @@ void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]) {
     }
 }
 
+// Function to train regression model using the training dataset
+void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES]) {
+    int computer_player = 1;
+    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0;
+    // Loop through each training data
+    for (int i = 0; i < TRAINING_SIZE; i++) {
+        // Print training data
+        printf("\nTraining Set: %d", i + 1);
+        printf("\n--Initial Weights--");
+        for(int j = 0; j < NO_FEATURES; j++){
+            printf("\nw%d = %f", j, weights[j]);
+        }
+        printf("\n\nBoard State:\n");
+        printBoard(train_data[i]);
+        // Get current training board's features
+        getBoardFeatures(train_data[i], computer_player);
+        // Compute predicted score for current training board
+        predicted_score = evaluateBoard(board_features, weights);
+        // Get actual score for current training board
+        actual_score = train_data[i][9];
+        // Obtain sum of the squared error
+        sum_square_error += pow(actual_score - predicted_score, 2);
+        // Update ML model's weights
+        updateWeights(learningRate, board_features, weights, actual_score, predicted_score);
+        // Print training results
+        printf("Predicted Score: %f\nActual Score: %f\n", predicted_score, actual_score);
+        printf("\n--Updated Weights--");
+        for(int j = 0; j < NO_FEATURES; j++){
+            printf("\nw%d = %f", j, weights[j]);
+        }
+        printf("\n");
+    }
+    // Calculate mean square error
+    mean_square_error = sum_square_error / TRAINING_SIZE;
+    printf("\nMean Squared Error: %f\n", mean_square_error);
+}
+
 // Function for ML model to evaluate the best possible move and make it
 void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int playerNo) {
     // Initialise counter and tracking variables
     int move_index = 0, best_move = 0;
-    float current_score = -1, best_score = -1;
+    float current_score = -999, best_score = -999;
     printf("\nPlayer %d's turn!\n", playerNo);
     // Reset array of possible moves for the ML model to take
     resetPossibleMoves(possible_moves);
@@ -472,7 +523,7 @@ void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int player
 // Function to update the weights for the ML model features
 void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated) {
     for (int i = 0; i < NO_FEATURES; i++) {
-        // Update each weight
+        // Update each weight to obtain lower mean squared error
 	    weights[i] = weights[i] + learningConstant * (target_actual - target_estimated) * features[i];
     }
 }
@@ -487,7 +538,7 @@ void printBoard(int gameState[BOARDSIZE]) {
     printf("  %2d  |  %2d  |  %2d\n\n",gameState[6],gameState[7],gameState[8]);
 }
 
-// Function to get the current board's status (win/lose/draw)
+// Function to get the current board's status (win/lose/draw/in progress)
 int getBoardStatus(int gameState[BOARDSIZE]) {
     // Default board status is 0 (draw)
     int board_status = 0;
@@ -498,7 +549,14 @@ int getBoardStatus(int gameState[BOARDSIZE]) {
             return board_status;                        // Return board status immediately once a win is found
         }
     }
-    // Return default board status if no wins are found
+    // Check for any blank cells (game is still in progress)
+    for (int i = 0; i < BOARDSIZE; i++){
+        if (gameState[i] == 0){
+            board_status = 9;
+            return board_status; // indicate that game is still in progress
+        }
+    }
+    // Return default board status if no wins are found (draw)
     return board_status;
 }
 

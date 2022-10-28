@@ -25,8 +25,9 @@ int training_dataset[TRAINING_SIZE][BOARDSIZE + 1];                             
 int test_dataset[TEST_SIZE][BOARDSIZE + 1];                                                     // Testing dataset
 int board_features[NO_FEATURES];                                                                // Array containing the feature values for the current board state
 float model_weights[NO_FEATURES] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};                         // Array containing weights for each feature
+// [-0.46404948503766014, 0.12219611789369066, -0.3789084993193866, 1.5886912337501886, -0.35647637386190606, -0.30687042423055455, 1.0]
 int possible_moves[BOARDSIZE][BOARDSIZE + 1];                                                   // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
-float learningRate = 0.001;                                                                     // Learning rate for ML model (0.1 is too high?)
+float learningRate = 0.001;                                                                     // Learning rate for ML model
 int board_state[BOARDSIZE];                                                                     // Array containing the current board state
 int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};       // Array containing the legal board configurations that qualify as a win
 
@@ -37,6 +38,7 @@ void stratifyDataset();                                                         
 void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);                                                                                      // Function to get the feature values for the current board's state
 float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]);                                                                         // Function to evaluate and assign a value to a given board state
 void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]);                                                                                       // Function to reset the array of possible moves for the ML model to take
+void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES]);                                                          // Function to train regression model using training dataset
 void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int playerNo);                                                                // Function for ML model to evaluate the best possible move and make it
 void updateWeights (float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated);    // Function to update the weights for the ML model features
 

@@ -91,6 +91,7 @@ print('Draws: ' + str(count_draw))
 print('Loss: ' + str(count_loss))
 
 print('Play yourself')
+print('Weights:', weights)
 while(True):
     board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     start = random.randint(0, 1)
