@@ -170,12 +170,15 @@ void Restart(){
 }
 
 static void Combo (GtkWidget* widget, gpointer *data){
-    // char* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
-    // printf("%c", *text);
-    // guint itemPos = gtk_drop_down_get_selected(GTK_DROP_DOWN(widget));
-    // char *hello = array[itemPos];
-    // printf("%c", *hello);
-    printf("hello");
+    GtkComboBox *combo_box = widget;
+
+    if (gtk_combo_box_get_active (combo_box) != 0) {
+        gchar *mode = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+        g_print ("You chose %s\n", mode);
+        g_free (mode);
+    }
+
+
 }
 
 void SettingDesign(){
@@ -201,6 +204,7 @@ void SettingDesign(){
     dropMenu = gtk_combo_box_text_new();
     
     //Populate the Menu
+    gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "Please Select a Game Mode");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "2 Player");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "1 VS Computer(Minimax)");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(dropMenu), NULL, "1 VS Computer(ML)");
@@ -296,4 +300,30 @@ int main(int argc, char**argv){
   //End of Creation
 
   return status;
+}
+
+
+//minimax algorithm//
+/*int minimax(int board[9], int player) { //P vs Minimax
+    //How is the position like for player (their turn) on board?
+    int winner = checkWin(board);        // getting the output from checkwinner func, '0' for no winner 
+    if(winner != 0)                 // checking if theres winner 
+    return winner*player;                 // return if theres winner 
+    
+    int move = -1;
+    int score = -2;     //Losing moves are preferred to no move
+    int i;
+    for(i = 0; i < 9; ++i) {            //For all moves,
+        if(board[i] == 0) {         //If unoccupied
+            board[i] = player;          //Try the move
+            int thisScore = -minimax(board, player*-1);   // calculate the score for the move
+            if(thisScore > score) {       // check if score is lesser than prev
+                score = thisScore;      // minimising the score 
+                move = i;            // replace old i with new updated i if true
+            }               
+            board[i] = 0;           //Reset move after trying
+        }
+    }
+    if(move == -1) return 0;
+    return score;
 }
