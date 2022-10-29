@@ -15,6 +15,7 @@
 #define TEST_LOSSES 63          // Total number of losses in the test dataset
 #define TEST_DRAWS 3            // Total number of draws in the test dataset
 #define NO_FEATURES 7           // Number of features
+#define NO_SIMULATION 10000     // Number of games to simulate
 
 // Global variables
 int dataset[DATASET_SIZE][BOARDSIZE + 1];                                                       // Array containing full dataset
@@ -42,6 +43,8 @@ void updateWeights (float learningConstant, int features[NO_FEATURES], float wei
 void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES]);                                                          // Function to train regression model using training dataset
 void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES], int train_model);                                               // Function to test regression model against the test dataset
 void simulateGames(int game_length, float weights[NO_FEATURES]);                                                                                    // Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
+void randomInput(int gameState[BOARDSIZE], int playerNo);                                                                                           // Function to make a random move
+
 /* Game Functions */
 void printBoard(int gameState[BOARDSIZE]);          // Function to print current board state
 void clearBoard(int gameState[BOARDSIZE]);          // Function to clear the board state

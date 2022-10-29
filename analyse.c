@@ -2,28 +2,33 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "config.h"
 
 // Program entrypoint
 int main() {
-    // Get user mode
-    int mode = 0;
-    do {
-        printf("\nSelect a game mode:\n(1) Two player mode\n(2) Play against computer\nEnter your choice: ");
-        scanf("%d", &mode);
-    } while (mode != 1 && mode != 2);
-
     /* Train ML Model */
     // Dataset pre-processing
     initialiseDataset();
     stratifyDataset();
+    simulateGames(NO_SIMULATION, model_weights);
+    // Train and test ML model
     trainModel(training_dataset, model_weights);
     testModel(test_dataset, model_weights, 0);
-    simulateGames(10000, model_weights);
+    // Simulate a specified number of games (AI vs AI) to further train the model
+    // simulateGames(NO_SIMULATION, model_weights);
+
+    // Get user mode
+    int mode = 0;
+    do {
+        printf("\nSelect a game mode:\n(1) Two player mode\n(2) Play against Smart AI\n(3) Play against Dumb AI\nEnter your choice: ");
+        scanf("%d", &mode);
+    } while (mode != 1 && mode != 2 && mode != 3);
 
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
     int board_status = 9; // Board Status: 1 or 2 if player won, 0 if draw, 9 if still in progress/not completed
+    int turn = 0; // Check whether AI or player should go first
 
     // Check user mode selected
     switch (mode) {
@@ -60,38 +65,159 @@ int main() {
             // Break out of case
             break;
         case 2:
-            /* One Player Mode */
+            /* One Player Mode against Smart AI */
+            srand(time(NULL));      // Initialise random number generator's seed
+            turn = rand() % 2;  // Generate random number between 0 and 1
             printBoard(board_state);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++) {
-                // Get ML model's input
-                modelInput(board_state, model_weights, current_player);
-                // Get current board status
-                board_status = getBoardStatus(board_state);
-                if (board_status != 9){
-                    break;
-                }
-                // Switch to next player after ML model's turn
-                if (current_player == 1){
-                    current_player = 2;
-                }
-                else {
-                    current_player = 1;
-                }
+                // Let ML model go first if turn = 1
+                if (turn){
+                    // Get ML model's input
+                    modelInput(board_state, model_weights, current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to next player after ML model's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
 
-                // Get player's input
-                playerInput(current_player);
-                // Get current board status
-                board_status = getBoardStatus(board_state);
-                if (board_status != 9){
-                    break;
+                    // Get player's input
+                    playerInput(current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to ML model's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
                 }
-                // Switch to ML model's turn
-                if (current_player == 1){
-                    current_player = 2;
-                }
+                // Let player go first if turn = 0
                 else {
-                    current_player = 1;
+                    // Get player's input
+                    playerInput(current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to ML model's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
+
+                    // Get ML model's input
+                    modelInput(board_state, model_weights, current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to next player after ML model's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
+                }
+            }
+            // Print results
+            if (board_status == 0){
+                printf("\nDRAW!");
+            }
+            else if (board_status == 1){
+                printf("\nPLAYER 1 WINS!");
+            }
+            else {
+                printf("\nPLAYER 2 WINS!");
+            }
+            // Break out of case
+            break;
+        case 3:
+            /* One Player Mode against Dumb AI */
+            srand(time(NULL));      // Initialise random number generator's seed
+            turn = rand() % 2;  // Generate random number between 0 and 1
+            printBoard(board_state);
+            // Loop through entire board
+            for (int i = 0; i < BOARDSIZE; i++) {
+                // Let dumb AI go first if turn = 1
+                if (turn){
+                    // Get dumb AI's input
+                    randomInput(board_state, current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to next player after computer's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
+
+                    // Get player's input
+                    playerInput(current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to computer's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
+                }
+                // Let player go first if turn = 0
+                else {
+                    // Get player's input
+                    playerInput(current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to computer's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
+
+                    // Get dumb AI's input
+                    randomInput(board_state, current_player);
+                    // Get current board status
+                    board_status = getBoardStatus(board_state);
+                    if (board_status != 9){
+                        break;
+                    }
+                    // Switch to next player after computer's turn
+                    if (current_player == 1){
+                        current_player = 2;
+                    }
+                    else {
+                        current_player = 1;
+                    }
                 }
             }
             // Print results
@@ -448,10 +574,12 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
         w5 = 0.377607
         w6 = 0.274246
 
-        Mean Squared Error of Training Dataset: 3.185723
+        Mean Squared Error for Training Data: 3.185723
+        Root Mean Square Error for Training Data: 1.784859
+        Mean Absolute Error for Training Data: 1.376389
     */
     int computer_player = 1;
-    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0;
+    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0, root_mean_square_error = 0, sum_abs_error = 0, mean_abs_error = 0;
     // Loop through each training data
     for (int i = 0; i < TRAINING_SIZE; i++) {
         // Print training data
@@ -470,6 +598,8 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
         actual_score = train_data[i][9];
         // Obtain sum of the squared error
         sum_square_error += pow(actual_score - predicted_score, 2);
+        // Obtain sum of the absolute error
+        sum_abs_error += fabs(predicted_score - actual_score);
         // Update ML model's weights
         updateWeights(learningRate, board_features, weights, actual_score, predicted_score);
         // Print training results
@@ -482,7 +612,11 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
     }
     // Calculate mean square error
     mean_square_error = sum_square_error / TRAINING_SIZE;
-    printf("\nMean Squared Error for Training Data: %f\n\n", mean_square_error);
+    // Calculate root mean square error
+    root_mean_square_error = sqrt(mean_square_error);
+    // Calculate mean absolute error
+    mean_abs_error = sum_abs_error / TRAINING_SIZE;
+    printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
 }
 
 // Function to test regression model against the testing dataset
@@ -498,7 +632,9 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
         w5 = 0.377607
         w6 = 0.274246
 
-        Mean Squared Error of Test Dataset: 1.073408 
+        Mean Squared Error for Test Data: 1.073408
+        Root Mean Square Error for Test Data: 1.036054
+        Mean Absolute Error for Test Data: 0.902610
 
         ~~Results (ML model trained using both training and test dataset)~~
         Weights generated from training on both training and test dataset:
@@ -509,10 +645,13 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
         w4 = -0.577758
         w5 = 0.339330
         w6 = 0.314742
-        Mean Squared Error of Test Dataset: 0.980228 
+
+        Mean Squared Error for Test Data: 0.980228
+        Root Mean Square Error for Test Data: 0.990065
+        Mean Absolute Error for Test Data: 0.851265
     */
     int computer_player = 1;
-    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0;
+    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0, root_mean_square_error = 0, sum_abs_error = 0, mean_abs_error = 0;
     // Loop through each test data
     for (int i = 0; i < TEST_SIZE; i++) {
         // Print test data
@@ -527,6 +666,8 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
         actual_score = test_data[i][9];
         // Obtain sum of the squared error
         sum_square_error += pow(actual_score - predicted_score, 2);
+        // Obtain sum of the absolute error
+        sum_abs_error += fabs(predicted_score - actual_score);
         // Check if model should be trained using the test data
         if (train_model == 1) {
             // Print initial weights
@@ -548,7 +689,11 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
     }
     // Calculate mean square error
     mean_square_error = sum_square_error / TEST_SIZE;
-    printf("\nMean Squared Error for Test Data: %f\n\n\n", mean_square_error);
+    // Calculate root mean square error
+    root_mean_square_error = sqrt(mean_square_error);
+    // Calculate the mean absolute error
+    mean_abs_error = sum_abs_error / TEST_SIZE;
+    printf("\nMean Squared Error for Test Data: %f\nRoot Mean Square Error for Test Data: %f\nMean Absolute Error for Test Data: %f\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
 }
 
 // Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
@@ -708,6 +853,21 @@ void updateWeights(float learningConstant, int features[NO_FEATURES], float weig
         // Update each weight to obtain lower mean squared error
 	    weights[i] = weights[i] + learningConstant * (target_actual - target_estimated) * features[i];
     }
+}
+
+// Function to make a random move
+void randomInput(int gameState[BOARDSIZE], int playerNo) {
+    // Initialise random number generator's seend
+    srand(time(NULL));
+    int random_move = 0;
+    do {
+        // Get a random number between 0 to 8 to select a random cell on the board
+        random_move = rand() % 9;
+    } while (gameState[random_move] != 0); // Keep looping until an empty cell is found
+    // Set the move
+    gameState[random_move] = playerNo;
+    printf("\nPlayer %d's turn!\n", playerNo);
+    printBoard(gameState);
 }
 
 /* Game Functions */
