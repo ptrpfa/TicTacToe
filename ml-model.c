@@ -5,31 +5,51 @@
 #include <time.h>
 #include "config.h"
 
-// Program entrypoint
-int main() {
-    /* Train ML Model */
-    // Dataset pre-processing
-    initialiseDataset();
-    stratifyDataset();
-    simulateGames(NO_SIMULATION, model_weights);
-    // Train and test ML model
-    trainModel(training_dataset, model_weights);
-    testModel(test_dataset, model_weights, 0);
-    // Simulate a specified number of games (AI vs AI) to further train the model
-    // simulateGames(NO_SIMULATION, model_weights);
+/* 
+    Program usage:
+    1) Compilation
+        gcc -o ml-model ml-model.c
+    2) Run program 
+        a) Normal usage (play Tic Tac Toe game)
+            ./ml-model
+        b) Train regression model and play Tic Tac Toe game
+            ./ml-model train
+*/
 
+// Program entrypoint
+int main(int argc, char * argv[]) {
+
+    // Check command line arguments
+    if (argc == 2 && strcmp(argv[1], "train") == 0) {
+        /* Train ML Model */
+        // Simulate a specified number of games (AI vs AI) to pre-train the ML model
+        simulateGames(NO_SIMULATION, model_weights);
+        // Dataset pre-processing
+        initialiseDataset();
+        stratifyDataset();
+        // Train and test ML model
+        trainModel(training_dataset, model_weights);
+        testModel(test_dataset, model_weights, 0);
+        // Evaluate performance of ML model over a specified amount of games
+        // evaluatePerformance(1000000);
+    }
+    else {
+        // Get pre-defined ML model weights from settings file
+        readWeights();
+    }
+    
+    /* Tic Tac Toe Game */
     // Get user mode
     int mode = 0;
     do {
         printf("\nSelect a game mode:\n(1) Two player mode\n(2) Play against Smart AI\n(3) Play against Dumb AI\nEnter your choice: ");
         scanf("%d", &mode);
     } while (mode != 1 && mode != 2 && mode != 3);
-
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
-    int board_status = 9; // Board Status: 1 or 2 if player won, 0 if draw, 9 if still in progress/not completed
-    int turn = 0; // Check whether AI or player should go first
-
+    int board_status = 9;   // Board Status: 1 or 2 if player won, 0 if draw, 9 if still in progress/not completed
+    srand(time(NULL));      // Initialise random number generator's seed
+    int turn = rand() % 2;  // Generate random number between 0 and 1 to check whether AI or player should go first
     // Check user mode selected
     switch (mode) {
         case 1:
@@ -66,8 +86,6 @@ int main() {
             break;
         case 2:
             /* One Player Mode against Smart AI */
-            srand(time(NULL));      // Initialise random number generator's seed
-            turn = rand() % 2;  // Generate random number between 0 and 1
             printBoard(board_state);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++) {
@@ -150,8 +168,6 @@ int main() {
             break;
         case 3:
             /* One Player Mode against Dumb AI */
-            srand(time(NULL));      // Initialise random number generator's seed
-            turn = rand() % 2;  // Generate random number between 0 and 1
             printBoard(board_state);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++) {
@@ -233,19 +249,18 @@ int main() {
             // Break out of case
             break;
     }
-
+    // End program
     return 0;
-
 }
 
 /* Machine Learning Functions */
 // Function to initialise dataset (read dataset file and populate dataset array)
 void initialiseDataset() { 
     // Initialise file pointer
-    FILE * dataset_file = fopen(DATASET, "r");
+    FILE * dataset_file = fopen(DATASET_FILE, "r");
     // Check if file pointer is valid
     if (dataset_file == NULL){
-        printf("%s does not exist!\n", DATASET);
+        printf("%s does not exist!\n", DATASET_FILE);
         exit(1);
     }
     else {
@@ -853,11 +868,13 @@ void updateWeights(float learningConstant, int features[NO_FEATURES], float weig
         // Update each weight to obtain lower mean squared error
 	    weights[i] = weights[i] + learningConstant * (target_actual - target_estimated) * features[i];
     }
+    // Update settings file
+    writeWeights();
 }
 
-// Function to make a random move
+// Function for program to make a random move
 void randomInput(int gameState[BOARDSIZE], int playerNo) {
-    // Initialise random number generator's seend
+    // Initialise random number generator's seed
     srand(time(NULL));
     int random_move = 0;
     do {
@@ -869,6 +886,156 @@ void randomInput(int gameState[BOARDSIZE], int playerNo) {
     printf("\nPlayer %d's turn!\n", playerNo);
     printBoard(gameState);
 }
+
+// Function to simulate a specified number of games (Smart AI vs Dumb AI) to quantify the performance of the regression model
+void evaluatePerformance(int game_length) {
+    // Initialise variables
+    int board_status = 9, current_player = 0, turn = 0, win_count = 0, draw_count = 0, loss_count = 0;
+    // Loop through each game
+    for (int game_no = 1; game_no <= game_length; game_no++) {
+        // Clear board before the start of each game
+        clearBoard(board_state);
+        // Reset board status (1 or 2 if player won, 0 if draw, 9 if still in progress/not completed)
+        board_status = 9;
+        // Print game
+        printf("\nPerformance Evaluation Game %d\n\n", game_no);
+        printBoard(board_state);
+        // Alternate starting player
+        if (game_no % 2 == 0) {
+            current_player = 1;
+            turn = 0;
+        }
+        else {
+            current_player = 2;
+            turn = 1;
+        }
+        // Loop through entire board
+        for (int i = 0; i < BOARDSIZE; i++) {
+            // Smart AI to go first
+            if (turn == 0) {
+                // Get smart AI's input
+                modelInput(board_state, model_weights, current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    // Break out of loop once game ends
+                    break;
+                }
+                // Switch to next player after smart AI's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+                // Get dumb AI's input
+                randomInput(board_state, current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    // Break out of loop once game ends
+                    break;
+                }
+                // Switch to next player after dumb AI's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+            }
+            // Dumb AI to go first
+            else {
+                // Get dumb AI's input
+                randomInput(board_state, current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    // Break out of loop once game ends
+                    break;
+                }
+                // Switch to next player after dumb AI's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+                // Get smart AI's input
+                modelInput(board_state, model_weights, current_player);
+                // Get current board status
+                board_status = getBoardStatus(board_state);
+                if (board_status != 9){
+                    // Break out of loop once game ends
+                    break;
+                }
+                // Switch to next player after smart AI's turn
+                if (current_player == 1){
+                    current_player = 2;
+                }
+                else {
+                    current_player = 1;
+                }
+            }
+        }
+        // Set game results
+        if (board_status == 0){
+            printf("\nDRAW!\n");
+            draw_count++;
+        }
+        else if (board_status == 1){
+            printf("\nPLAYER 1 WINS!\n");
+            win_count++;
+        }
+        else {
+            printf("\nPLAYER 2 WINS!\n");
+            loss_count++;
+        }
+    }
+    // Clear board after game simulations
+    clearBoard(board_state);
+    // Print results
+    printf("\n\nTotal games played against dumb AI: %d\nWins: %d\nDraws: %d\nLosses: %d\n", game_length, win_count, draw_count, loss_count);
+}
+
+// Function to read the ML model's weights from the settings file                                                                    
+void readWeights() {
+    // Initialise file pointer for reading
+    FILE * settings_file = fopen(SETTINGS_FILE, "r");
+    int index = 0;
+    float value = 0;
+    // Check if file pointer is valid
+    if (settings_file == NULL){
+        printf("%s does not exist!\n", SETTINGS_FILE);
+        exit(1);
+    }
+    // Read file contents
+    for (int i = 0; i < NO_FEATURES; i++) {
+        // Read current line in the file
+        fscanf(settings_file, "w%d = %f\n", &index, &value);
+        // Update ML model's weights
+        model_weights[index] = value;
+    }
+    // Close file pointer
+    fclose(settings_file);
+}     
+
+// Function to write the ML model's weights to the settings file                                                                                                                                                            
+void writeWeights() {
+    // Initialise file pointer for writing
+    FILE *settings_file = fopen(SETTINGS_FILE, "w");
+    // Check if file pointer is valid
+    if (settings_file == NULL){
+        printf("%s does not exist!\n", SETTINGS_FILE);
+        exit(1);
+    }
+    // Write ML model's weights to the file
+    for (int i = 0; i < NO_FEATURES; i++){
+        fprintf(settings_file, "w%d = %f\n", i, model_weights[i]);
+    }
+    // Close file pointer
+    fclose(settings_file);
+}                                                                                                                          
 
 /* Game Functions */
 // Function to print current board state
