@@ -6,7 +6,6 @@
 
 // Program entrypoint
 int main() {
-
     // Get user mode
     int mode = 0;
     do {
@@ -19,7 +18,8 @@ int main() {
     initialiseDataset();
     stratifyDataset();
     trainModel(training_dataset, model_weights);
-    // test model here
+    testModel(test_dataset, model_weights, 0);
+    simulateGames(10000, model_weights);
 
     // Initialise current player and board status
     int current_player = 1; // Players: Player 1 or 2
@@ -437,6 +437,19 @@ void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]) {
 
 // Function to train regression model using the training dataset
 void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES]) {
+    /*
+        --Results--
+        Weights generated:
+        w0 = 0.057157
+        w1 = 0.323193
+        w2 = 0.541074
+        w3 = 0.498722
+        w4 = -0.664813
+        w5 = 0.377607
+        w6 = 0.274246
+
+        Mean Squared Error of Training Dataset: 3.185723
+    */
     int computer_player = 1;
     float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0;
     // Loop through each training data
@@ -469,7 +482,176 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
     }
     // Calculate mean square error
     mean_square_error = sum_square_error / TRAINING_SIZE;
-    printf("\nMean Squared Error: %f\n", mean_square_error);
+    printf("\nMean Squared Error for Training Data: %f\n\n", mean_square_error);
+}
+
+// Function to test regression model against the testing dataset
+void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES], int train_model) {
+    /*
+        --Results (ML model only trained using training dataset)--
+        Weights generated from training dataset:
+        w0 = 0.057157
+        w1 = 0.323193
+        w2 = 0.541074
+        w3 = 0.498722
+        w4 = -0.664813
+        w5 = 0.377607
+        w6 = 0.274246
+
+        Mean Squared Error of Test Dataset: 1.073408 
+
+        ~~Results (ML model trained using both training and test dataset)~~
+        Weights generated from training on both training and test dataset:
+        w0 = 0.032795
+        w1 = 0.300029
+        w2 = 0.536177
+        w3 = 0.472087
+        w4 = -0.577758
+        w5 = 0.339330
+        w6 = 0.314742
+        Mean Squared Error of Test Dataset: 0.980228 
+    */
+    int computer_player = 1;
+    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0;
+    // Loop through each test data
+    for (int i = 0; i < TEST_SIZE; i++) {
+        // Print test data
+        printf("\nTesting Set: %d", i + 1);
+        printf("\n\nBoard State:\n");
+        printBoard(test_data[i]);
+        // Get current test board's features
+        getBoardFeatures(test_data[i], computer_player);
+        // Compute predicted score for current test board
+        predicted_score = evaluateBoard(board_features, weights);
+        // Get actual score for current test board
+        actual_score = test_data[i][9];
+        // Obtain sum of the squared error
+        sum_square_error += pow(actual_score - predicted_score, 2);
+        // Check if model should be trained using the test data
+        if (train_model == 1) {
+            // Print initial weights
+            printf("\n--Initial Weights--");
+            for(int j = 0; j < NO_FEATURES; j++){
+                printf("\nw%d = %f", j, weights[j]);
+            }
+            // Update ML model's weights
+            updateWeights(learningRate, board_features, weights, actual_score, predicted_score);
+            // Print updated weights
+            printf("\n\n--Updated Weights--");
+            for(int j = 0; j < NO_FEATURES; j++){
+                printf("\nw%d = %f", j, weights[j]);
+            }
+            printf("\n");
+        }
+        // Print test results
+        printf("\nPredicted Score: %f\nActual Score: %f\n", predicted_score, actual_score);
+    }
+    // Calculate mean square error
+    mean_square_error = sum_square_error / TEST_SIZE;
+    printf("\nMean Squared Error for Test Data: %f\n\n\n", mean_square_error);
+}
+
+// Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
+void simulateGames(int game_length, float weights[NO_FEATURES]) {
+    // Initialise variables
+    int board_status = 9, current_player = 0, game_result = 0;
+    int base_player = 1;                            // Primary player that we are using to train the ML model
+    int starting_board_features[NO_FEATURES] = {};  // Array to keep a copy of the starting board's features
+    float starting_score, intermediate_score, final_score;
+    // Loop through each game
+    for (int game_no = 1; game_no <= game_length; game_no++) {
+        // Clear board before the start of each game
+        clearBoard(board_state);
+        // Reset board status (1 or 2 if player won, 0 if draw, 9 if still in progress/not completed)
+        board_status = 9;
+        // Change order of starting player for each game
+        if (game_no % 2 == 0) {
+            current_player = 1;
+        }
+        else {
+            current_player = 2;
+        }
+        // Print game
+        printf("\nSimulated Game %d\n\n", game_no);
+        printBoard(board_state);
+        // Loop through entire board
+        for (int i = 0; i < BOARDSIZE; i++) {
+            /* Get the features and score of the current board before any moves have been made */
+            getBoardFeatures(board_state, base_player);                     // Get pre-move board features for the base player
+            starting_score = evaluateBoard(board_features, model_weights);  // Get pre-move board score
+            // Make a copy of the current board features
+            for (int j = 0; j < NO_FEATURES; j++){
+                starting_board_features[j] = board_features[j];
+            }
+
+            /* Get ML model's moves */
+            // Get ML model's input
+            modelInput(board_state, model_weights, current_player);
+            // Get current board status
+            board_status = getBoardStatus(board_state);
+            if (board_status != 9){
+                // Break out of loop once game ends
+                break;
+            }
+            // Switch to opposing ML model's turn
+            if (current_player == 1){
+                current_player = 2;
+            }
+            else {
+                current_player = 1;
+            }
+            // Get opposing ML model's input
+            modelInput(board_state, model_weights, current_player);
+            // Get current board status
+            board_status = getBoardStatus(board_state);
+            if (board_status != 9){
+                // Break out of loop once game ends
+                break;
+            }
+            // Switch to next player after ML model's turn
+            if (current_player == 1){
+                current_player = 2;
+            }
+            else {
+                current_player = 1;
+            }
+
+            /* Get the features and score of the intermediate board, after the ML model's moves */
+            getBoardFeatures(board_state, base_player);                         // Get intermediate board features for the base player
+            intermediate_score = evaluateBoard(board_features, model_weights);  // Get intermediate board score
+
+            /* Update ML model's weights after each intermediate board */
+            updateWeights(learningRate, starting_board_features, model_weights, intermediate_score, starting_score); // intermediate_score is the actual value, starting_score is the predicted value
+        }
+        // Set game results
+        if (board_status == 0){
+            printf("\nDRAW!\n");
+            game_result = 0; // Draw for Player 1
+        }
+        else if (board_status == 1){
+            printf("\nPLAYER 1 WINS!\n");
+            game_result = 1; // Win for Player 1
+        }
+        else {
+            printf("\nPLAYER 2 WINS!\n");
+            game_result = -1; // Loss for Player 1
+        }
+        
+        /* Get the features and score after the completion of each game */
+        getBoardFeatures(board_state, base_player);                 // Get post-game board features for the base player
+        final_score = evaluateBoard(board_features, model_weights); // Get post-game board score
+
+        /* Update ML model's weights after the completion of each game */
+        updateWeights(learningRate, starting_board_features, model_weights, game_result, final_score); // game_result is the actual value, final_score is the predicted value
+
+        printf("\n--Updated Weights--");
+        for(int k = 0; k < NO_FEATURES; k++){
+            printf("\nw%d = %f", k, weights[k]);
+        }
+        printf("\n\n");
+    }
+    // Clear board after game simulations
+    clearBoard(board_state);
 }
 
 // Function for ML model to evaluate the best possible move and make it
@@ -536,6 +718,13 @@ void printBoard(int gameState[BOARDSIZE]) {
     printf("  %2d  |  %2d  |  %2d\n",gameState[3],gameState[4],gameState[5]);
     printf("------+------+------\n");
     printf("  %2d  |  %2d  |  %2d\n\n",gameState[6],gameState[7],gameState[8]);
+}
+
+// Function to clear the board state
+void clearBoard(int gameState[BOARDSIZE]) {
+    for (int i = 0; i < BOARDSIZE; i++) {
+        gameState[i] = 0;
+    }
 }
 
 // Function to get the current board's status (win/lose/draw/in progress)
