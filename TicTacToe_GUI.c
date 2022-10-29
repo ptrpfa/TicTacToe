@@ -114,6 +114,16 @@ static void MainGameController(GtkWidget *button, gpointer data){
     }
 }
 
+// Assign CSS Class to the buttons
+void buttonCSS (int i, char a[7]){
+    GtkWidget* buttonTemp;
+    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[i][0], ButtonPos[i][1]);
+    context = gtk_widget_get_style_context(buttonTemp);    
+    gtk_style_context_add_class(context,a);
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+}
+
+
 void BoardDesign(){
     /* Here we construct the grid that is going pack our buttons */ 
     GtkWidget* button;
@@ -134,44 +144,18 @@ void BoardDesign(){
         gtk_grid_attach (GTK_GRID (boardGrid), button, ButtonPos[i][0], ButtonPos[i][1], 160, 160);
     }
 
-    GtkWidget* buttonTemp;
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[0][0], ButtonPos[0][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button1");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[1][0], ButtonPos[1][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button2");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[2][0], ButtonPos[2][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button2");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[3][0], ButtonPos[3][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button1");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[4][0], ButtonPos[4][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button2");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[5][0], ButtonPos[5][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button2");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[6][0], ButtonPos[6][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button3");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[7][0], ButtonPos[7][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button4");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    buttonTemp = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[8][0], ButtonPos[8][1]);
-    context = gtk_widget_get_style_context(buttonTemp);    
-    gtk_style_context_add_class(context,"button4");
-    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-}   
+    buttonCSS(0,"button1");
+    buttonCSS(1,"button2");
+    buttonCSS(2,"button2");
+    buttonCSS(3,"button1");
+    buttonCSS(4,"button2");
+    buttonCSS(5,"button2");
+    buttonCSS(6,"button3");
+    buttonCSS(7,"button4");
+    buttonCSS(8,"button4");
+}  
+
+
 
 void Restart(){
     GtkWidget* buttonChild;
