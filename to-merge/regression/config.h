@@ -1,8 +1,11 @@
 /* Configuration file for Tic Tac Toe program */
 // Macros
-#define DATASET_FILE "dataset/tic-tac-toe.data" // Dataset file
-#define SETTINGS_FILE "data.txt"                // File contaiing the ML model's weights
+/* Game Macros */
 #define BOARDSIZE 9                             // Board size
+
+/* Machine Learning Macros */
+#define DATASET_FILE "dataset/tic-tac-toe.data" // Dataset file
+#define SETTINGS_FILE "weights.txt"             // File containing the ML model's weights
 #define DATASET_SIZE 958                        // Dataset size
 #define DATASET_WINS 626                        // Total number of wins in the dataset
 #define DATASET_LOSSES 316                      // Total number of losses in the dataset
@@ -40,7 +43,7 @@ void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);                  
 float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]);                                                                         // Function to evaluate and assign a value to a given board state
 void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]);                                                                                       // Function to reset the array of possible moves for the ML model to take
 void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int playerNo);                                                                // Function for ML model to evaluate the best possible move and make it
-void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated);    // Function to update the weights for the ML model features
+void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated);     // Function to update the weights for the ML model features
 void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES]);                                                          // Function to train regression model using training dataset
 void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURES], int train_model);                                               // Function to test regression model against the test dataset
 void simulateGames(int game_length, float weights[NO_FEATURES]);                                                                                    // Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
