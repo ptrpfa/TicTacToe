@@ -109,7 +109,7 @@ _Allegro 5 Library Download:_
 
 1) Open Msys2 (The purple icon one) and type in the following command :
    ```sh
-  pacman -S mingw-w64-x86_64-allegro
+   pacman -S mingw-w64-x86_64-allegro
    ```
 2) Head over to task.json and add the following libs into your args
    ```sh
