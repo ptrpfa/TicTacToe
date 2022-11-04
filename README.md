@@ -108,12 +108,15 @@ _Now you should run without error_
 _Allegro 5 Library Download:_
 
 1) Open Msys2 (The purple icon one) and type in the following command : pacman -S mingw-w64-x86_64-allegro (press y for everything)
-2) Head over to task.json and add the following libs in 
+2) Head over to task.json and add the following libs in args
+                        ```sh
                          "args":[
                           "-lintl",
                           "-lallegro_audio",
                           "-lallegro",
-                          "-lallegro_acodec"]
+                          "-lallegro_acodec"
+                          ],
+                          ...
 3) Include the "sound" folder where all the sound effects are stored in
 4) You can run the program now
                
