@@ -1,5 +1,4 @@
 // This program is a stripped down version of the ml-model.c program. This program only contains the essential components to utilise the trained ML model
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,8 +8,6 @@
 
 // Program entrypoint
 int main(int argc, char * argv[]) {
-
-    
     // Get pre-defined ML model weights from settings file
     readWeights();
     
@@ -30,13 +27,13 @@ int main(int argc, char * argv[]) {
     switch (mode) {
         case 1:
             /* Two Player Mode */
-            printBoard(board_state);
+            printBoard(board);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++){
                 // Get player's input
                 playerInput(current_player);
                 // Get current board status
-                board_status = getBoardStatus(board_state);
+                board_status = getBoardStatus(board);
                 if (board_status != 9){
                     break;
                 }
@@ -62,15 +59,15 @@ int main(int argc, char * argv[]) {
             break;
         case 2:
             /* One Player Mode against Smart AI */
-            printBoard(board_state);
+            printBoard(board);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++) {
                 // Let ML model go first if turn = 1
                 if (turn){
                     // Get ML model's input
-                    modelInput(board_state, model_weights, current_player);
+                    modelInput(board, model_weights, current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -85,7 +82,7 @@ int main(int argc, char * argv[]) {
                     // Get player's input
                     playerInput(current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -102,7 +99,7 @@ int main(int argc, char * argv[]) {
                     // Get player's input
                     playerInput(current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -115,9 +112,9 @@ int main(int argc, char * argv[]) {
                     }
 
                     // Get ML model's input
-                    modelInput(board_state, model_weights, current_player);
+                    modelInput(board, model_weights, current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -144,15 +141,15 @@ int main(int argc, char * argv[]) {
             break;
         case 3:
             /* One Player Mode against Dumb AI */
-            printBoard(board_state);
+            printBoard(board);
             // Loop through entire board
             for (int i = 0; i < BOARDSIZE; i++) {
                 // Let dumb AI go first if turn = 1
                 if (turn){
                     // Get dumb AI's input
-                    randomInput(board_state, current_player);
+                    randomInput(board, current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -167,7 +164,7 @@ int main(int argc, char * argv[]) {
                     // Get player's input
                     playerInput(current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -184,7 +181,7 @@ int main(int argc, char * argv[]) {
                     // Get player's input
                     playerInput(current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -197,9 +194,9 @@ int main(int argc, char * argv[]) {
                     }
 
                     // Get dumb AI's input
-                    randomInput(board_state, current_player);
+                    randomInput(board, current_player);
                     // Get current board status
-                    board_status = getBoardStatus(board_state);
+                    board_status = getBoardStatus(board);
                     if (board_status != 9){
                         break;
                     }
@@ -464,8 +461,8 @@ void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int player
         }
     }
     // Set the best move
-    board_state[best_move] = playerNo;
-    printBoard(board_state);
+    board[best_move] = playerNo;
+    printBoard(board);
 }                                          
 
 // Function for program to make a random move
@@ -515,13 +512,6 @@ void printBoard(int gameState[BOARDSIZE]) {
     printf("  %2d  |  %2d  |  %2d\n\n",gameState[6],gameState[7],gameState[8]);
 }
 
-// Function to clear the board state
-void clearBoard(int gameState[BOARDSIZE]) {
-    for (int i = 0; i < BOARDSIZE; i++) {
-        gameState[i] = 0;
-    }
-}
-
 // Function to get the current board's status (win/lose/draw/in progress)
 int getBoardStatus(int gameState[BOARDSIZE]) {
     // Default board status is 0 (draw)
@@ -558,14 +548,14 @@ void playerInput(int playerNo){
             continue;
         }
         // Check if current cell selected is occupied
-        else if (board_state[player_move] != 0) { 
+        else if (board[player_move] != 0) { 
             printf("\nPosition %d is already occupied!", player_move);
             continue;
         }
         // Set current move
         else {
-            board_state[player_move] = playerNo;
-            printBoard(board_state);
+            board[player_move] = playerNo;
+            printBoard(board);
             break;
         }
     } while (1);
