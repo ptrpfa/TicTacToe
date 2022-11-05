@@ -14,6 +14,7 @@
 #define P2_SOUND "files/sound/crunk.wav"        // Audio to be played whenever the second player places a piece
 #define AI_SOUND "files/sound/computer1.wav"    // Audio to be played whenever the computer player places a piece
 #define AI_SOUND2 "files/sound/computer2.wav"   // Audio to be played whenever the computer player places a piece
+#define AI_SOUND3 "files/sound/computer3.wav"   // Audio to be played whenever the computer player places a piece
 #define STYLES_FILE "files/styles.css"          // File containing the CSS styles for the GUI
 
 // Machine Learning Macros
@@ -28,7 +29,7 @@ int board[9] = {0,0,0,0,0,0,0,0,0};                                             
 int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};                                                               // Array containing the legal board configurations that qualify as a win
 
 // GTK GUI Variables
-const char *gamemodeLabel[] = { "\nPLEASE ENTER A GAME MODE\n", "\nMULTIPLAYER\n", "\nPLAYER VS COMPUTER(HARD)\n", "\nPLAYER VS COMPUTER(MEDIUM)\n"};   // Game mode options
+const char *gamemodeLabel[] = { "\nPLEASE SELECT A GAME MODE\n", "\n TWO PLAYER MODE\n", "\nONE PLAYER MODE (EASY)\n", "\nONE PLAYER MODE (MEDIUM)\n", "\nONE PLAYER MODE (HARD)\n"};   // Game mode options
 int ButtonPos[9][2] = {{0,0},{160,0},{320,0}, {0,160},{160,160},{320,160}, {0,320},{160,320},{320,320}};                                                // Tic Tac Toe button positions
 GtkWidget *window, *headerlabel, *boardGrid, *settingGrid, *StartBtn, *gameModeMenu;                                                                    // GTK elements
 
@@ -64,6 +65,6 @@ void Restart();                                                                 
 void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);                          // Function to get the feature values for the current board's state
 float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]);             // Function to evaluate and assign a value to a given board state
 void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]);                           // Function to reset the array of possible moves for the ML model to take
-int modelInput(float weights[NO_FEATURES], int playerNo);    // Function for ML model to evaluate the best possible move and make it
-void randomInput(int gameState[BOARDSIZE], int playerNo);                               // Function to make a random move
+int modelInput(float weights[NO_FEATURES], int playerNo);                               // Function for ML model to evaluate the best possible move
+int randomInput(int gameState[BOARDSIZE], int playerNo);                                // Function to generate a random move
 void readWeights();                                                                     // Function to read the ML model's weights from the settings file                                                                                                       

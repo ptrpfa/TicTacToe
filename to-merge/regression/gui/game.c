@@ -12,8 +12,9 @@ ma_engine miniaudio_engine;
 
 // Program entrypoint
 int main (int argc, char**argv) {
-    // Read in ML weights
+    // Read in ML model's weights
     readWeights();
+    
     // Initialise Mini Audio engine
     miniaudio_result = ma_engine_init(NULL, &miniaudio_engine);
     // Check if the MA engine has been initialised successfully
@@ -21,22 +22,23 @@ int main (int argc, char**argv) {
         printf("Failed to initialize Mini Audio Engine!");
         exit(1);
     }
+    
     // Create a GTKApplication object
     GtkApplication* app; //app is the GTKApplication 
     int status;
-
     app = gtk_application_new(NULL, G_APPLICATION_DEFAULT_FLAGS); //Init App, Parameter: application name, flags for special needs 
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);//Connect App with the 'activate' function, or the settings for the GUI
     status = g_application_run(G_APPLICATION(app), argc, argv); //Accpets command line argument with argc and argv
     g_object_unref(app); //Remove it from memory
-    //End of Creation
-
+    
     // Close Mini Audio engine
     ma_engine_uninit(&miniaudio_engine);
 
+    // End of program
     return status;
 }
 
+/* GTK GUI Functions */
 // Function to initialise GTK elements
 static void activate(GtkApplication* app, gpointer user_data){
 
@@ -123,11 +125,7 @@ void SettingDesign(){
     gtk_grid_attach (GTK_GRID (settingGrid), StartBtn, 1, 0, 1, 1);
 
     //Init the gameMode Dropdown box
-    const char *mode[] = { "\nPLEASE ENTER A GAME MODE\n", 
-                        "\nMULTIPLAYER\n", 
-                        "\nPLAYER VS COMPUTER(HARD)\n", 
-                        "\nPLAYER VS COMPUTER(MEDIUM)\n",
-                        NULL };
+    const char *mode[] = { "\nPLEASE SELECT A GAME MODE\n", "\n TWO PLAYER MODE\n", "\nONE PLAYER MODE (EASY)\n", "\nONE PLAYER MODE (MEDIUM)\n", "\nONE PLAYER MODE (HARD)\n", NULL };
     gameModeMenu = gtk_drop_down_new_from_strings(mode);
     g_signal_connect(gameModeMenu, "notify::selected", G_CALLBACK (modeController), NULL);
     gtk_grid_attach (GTK_GRID (settingGrid), gameModeMenu, 2,  0, 3, 1);
@@ -218,6 +216,7 @@ void Restart(){
     player = -1;
 }
 
+/* Game Functions */
 // Create the Design for the Tic Tac Toe Board
 void BoardDesign(){
     /* Here we construct the grid that is going pack our buttons */ 
@@ -356,44 +355,113 @@ int checkPlayerData(char n){
 
 // Main game controller function
 static void MainGameController(GtkButton *button, gpointer data){    
-
     int result = 0;
+    int move_index = 0;
     switch(gameModeOption){
-        case 1: // 2 Player Mode
+        case 1: /* 2 Player Mode */
+            // Get user's input
             twoplayer(button, GPOINTER_TO_INT(data));
             result = checkWin();
+            // Check board results
             if(result !=0){ //Someone win or draw
                 DisplayWin(result);
             } 
             break;
-        case 2: // MiniMax
+        case 2: /* One Player Mode: Easy (against dumb AI, random moves) */
             // Get First Player's input first
-            //Change the button label
+            // Change the button label
+            gtk_button_set_label(GTK_WIDGET(button), "X");
+            CreateCSS(GTK_WIDGET(button),"xo");
+            audio(P1_SOUND); // Play sound effect for Player 1
+            // Update the global board;
+            move_index = GPOINTER_TO_INT(data);
+            board[move_index] = -1;
+            // Set the button to be non clickable after the player's move
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
+            //End of first player
+            // Check board results
+            result = checkWin();
+            if(result == 0){ //No one win
+                // Dumb AI move
+                int move = randomInput(board, 1);
+                delay(TIME_DELAY); // Wait for a set period of time before making the move
+                board[move] = 1;   // Set AI's move
+                GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
+                // Set the button text
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
+                CreateCSS(GTK_BUTTON(buttonChild),"xo");
+                audio(AI_SOUND3);
+                gtk_widget_set_sensitive(buttonChild, 0);
+                // Check if computer wins
+                result = checkWin();
+                if(result != 0){
+                    DisplayWin2(result);
+                }
+            }else{
+                DisplayWin2(result);
+            }
+            break;
+        case 3:  /* One Player Mode: Medium (against smart AI, trained using linear regression neural network) */
+            // Get First Player's input first
+            // Change the button label
             gtk_button_set_label(GTK_WIDGET(button), "X");
             CreateCSS(GTK_WIDGET(button),"xo");
             // Play sound effect for Player 1
             audio(P1_SOUND);
             // Update the global board;
-            int pos = GPOINTER_TO_INT(data);
-            board[pos] = -1;
+            move_index = GPOINTER_TO_INT(data);
+            board[move_index] = -1;
             // Set the button to be non clickable after the player's move
             gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
             //End of first player
-
+            //Check Win
+            result = checkWin();
+            if(result == 0){ //No one win
+                // AI Player Move
+                int move = modelInput(model_weights, 1);
+                delay(TIME_DELAY); // Wait for a set period of time before making the move
+                board[move] = 1;  // Set ML model's move
+                GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
+                // Set the button text
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
+                CreateCSS(GTK_BUTTON(buttonChild),"xo");
+                audio(AI_SOUND);
+                gtk_widget_set_sensitive(buttonChild, 0);
+                // Check if computer wins
+                result = checkWin();
+                if(result != 0){
+                    DisplayWin2(result);
+                }
+            }else{
+                DisplayWin2(result);
+            }
+            break;
+        case 4:  /* One Player Mode: Hard (against Minimax Algorithm) */
+            // Get First Player's input first
+            // Change the button label
+            gtk_button_set_label(GTK_WIDGET(button), "X");
+            CreateCSS(GTK_WIDGET(button),"xo");
+            // Play sound effect for Player 1
+            audio(P1_SOUND);
+            // Update the global board;
+            move_index = GPOINTER_TO_INT(data);
+            board[move_index] = -1;
+            // Set the button to be non clickable after the player's move
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
+            //End of first player
             //Check Win
             result = checkWin();
             if(result == 0){ //No one win
                 //AI Player Move
                 int move = computerMove();
                 delay(TIME_DELAY); // Wait for a set period of time before making the move
-                board[move] = 1;            // AI played the best move 
+                board[move] = 1;   // AI played the best move 
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
                 //Set the button text
                 gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
                 CreateCSS(GTK_BUTTON(buttonChild),"xo");
                 audio(AI_SOUND2);
                 gtk_widget_set_sensitive(buttonChild, 0);
-
                 //Check if computer wins
                 result = checkWin();
                 if(result != 0){
@@ -402,50 +470,11 @@ static void MainGameController(GtkButton *button, gpointer data){
             }else{
                 DisplayWin2(result);
             }
-            break;
-        case 3: // ML Model input
-            // Get First Player's input first
-            //Change the button label
-            gtk_button_set_label(GTK_WIDGET(button), "X");
-            CreateCSS(GTK_WIDGET(button),"xo");
-            // Play sound effect for Player 1
-            audio(P1_SOUND);
-            // Update the global board;
-            int move_index = GPOINTER_TO_INT(data);
-            board[move_index] = -1;
-            // Set the button to be non clickable after the player's move
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
-            //End of first player
-
-            //Check Win
-            result = checkWin();
-            if(result == 0){ //No one win
-                //AI Player Move
-                int move = modelInput(model_weights, 1);
-                delay(TIME_DELAY); // Wait for a set period of time before making the move
-                board[move] = 1;            // AI played the best move 
-                GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                //Set the button text
-                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
-                CreateCSS(GTK_BUTTON(buttonChild),"xo");
-                audio(AI_SOUND);
-                gtk_widget_set_sensitive(buttonChild, 0);
-
-                //Check if computer wins
-                result = checkWin();
-                if(result != 0){
-                    DisplayWin2(result);
-                }
-            }else{
-                DisplayWin2(result);
-            }
-            break;
-        case 4: // dumb ai
-            printf("code for dumb ai");
             break;
     }
 }
 
+/* Two Player Mode Function */
 // Function to get the users' inputs for 2 Player Mode
 void twoplayer(GtkButton *button, int data){
     // Set the correct Label for the player on press button
@@ -477,75 +506,7 @@ void twoplayer(GtkButton *button, int data){
     }
 }
 
-// Function to get the MiniMax computer input
-int computerMove(){
-    int move = -1;          
-    int score = -2;
-    int i;
-    for(i = 0; i < 9; ++i) {        // for all moves
-        if(board[i] == 0) {         // if its unoccupied
-            board[i] = 1;           // try the move 
-            int tempScore = -minimax(-1);    // calculate the score for the move
-            board[i] = 0;           // reset the move 
-            if(tempScore > score) {     // check if its greater than prev move 
-                score = tempScore;          // maximising the score 
-                move = i;                   // replace old i with new updated i if true
-            }
-        }
-    }
-    //returns a score based on minimax tree at a given node.
-    return move;
-}
-
-// MiniMax algorithm
-int minimax(int player) { //P vs Minimax
-    //How is the position like for player (their turn) on board?
-    int winner = checkWin();        // getting the output from checkwinner func, '0' for no winner 
-    if(winner != 0)                 // checking if theres winner 
-        return winner*player;                 // return if theres winner 
-    
-    int move = -1;
-    int score = -2;     //Losing moves are preferred to no move
-    int i;
-    for(i = 0; i < 9; ++i) {            //For all moves,
-        if(board[i] == 0) {         //If unoccupied
-            board[i] = player;          //Try the move
-            int thisScore = -minimax(player*-1);   //calculate the score for the move
-            if(thisScore > score) {       // check if score is lesser than prev
-                score = thisScore;      // minimising the score 
-                move = i;            // replace old i with new updated i if true
-            }               
-            board[i] = 0;           //Reset move after trying
-        }
-    }
-
-    if(move == -1) 
-        return 0;
-    
-    return score;
-}
-
-// Function to play an audio sound effect
-void audio(const char *audio_file){
-    // Play audio  file
-    ma_engine_play_sound(&miniaudio_engine, audio_file, NULL);
-}
-
-// Function to delay for a specified amount of seconds
-void delay(float seconds){
-    // Calculate number of clock cycles to wait for
-    clock_t wait = CLOCKS_PER_SEC * seconds;
-    // Get total number of clock cycles at the start
-    clock_t start = clock();
-    // Wait until the stipulated time has passed
-    while(clock() < start + wait);
-}
-
-
-
-
-
-// ML Model Functions
+/* Machine Learning Model Functions */
 // Function to read the ML model's weights from the settings file                                                                    
 void readWeights() {
     // Initialise file pointer for reading
@@ -746,7 +707,20 @@ void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]) {
     }
 }
 
-// Function for ML model to evaluate the best possible move and make it
+// Function for program to return a random move (One Player Mode: Easy)
+int randomInput(int gameState[BOARDSIZE], int playerNo) {
+    // Initialise random number generator's seed
+    srand(time(NULL));
+    int random_move = 0;
+    do {
+        // Get a random number between 0 to 8 to select a random cell on the board
+        random_move = rand() % 9;
+    } while (gameState[random_move] != 0); // Keep looping until an empty cell is found
+    // Return the move
+    return random_move;
+}
+
+// Function for ML model to evaluate the best possible move (One Player Mode: Medium)
 int modelInput(float weights[NO_FEATURES], int playerNo) {
     // Initialise counter and tracking variables
     int move_index = 0, best_move = 0;
@@ -791,3 +765,69 @@ int modelInput(float weights[NO_FEATURES], int playerNo) {
     // Return the best move
     return best_move;
 }         
+
+/* Minimax Algorithm Functions */
+// Function to get the MiniMax computer input (One Player Mode: Hard)
+int computerMove(){
+    int move = -1;          
+    int score = -2;
+    int i;
+    for(i = 0; i < 9; ++i) {        // for all moves
+        if(board[i] == 0) {         // if its unoccupied
+            board[i] = 1;           // try the move 
+            int tempScore = -minimax(-1);    // calculate the score for the move
+            board[i] = 0;           // reset the move 
+            if(tempScore > score) {     // check if its greater than prev move 
+                score = tempScore;          // maximising the score 
+                move = i;                   // replace old i with new updated i if true
+            }
+        }
+    }
+    //returns a score based on minimax tree at a given node.
+    return move;
+}
+
+// MiniMax algorithm
+int minimax(int player) { //P vs Minimax
+    //How is the position like for player (their turn) on board?
+    int winner = checkWin();        // getting the output from checkwinner func, '0' for no winner 
+    if(winner != 0)                 // checking if theres winner 
+        return winner*player;                 // return if theres winner 
+    
+    int move = -1;
+    int score = -2;     //Losing moves are preferred to no move
+    int i;
+    for(i = 0; i < 9; ++i) {            //For all moves,
+        if(board[i] == 0) {         //If unoccupied
+            board[i] = player;          //Try the move
+            int thisScore = -minimax(player*-1);   //calculate the score for the move
+            if(thisScore > score) {       // check if score is lesser than prev
+                score = thisScore;      // minimising the score 
+                move = i;            // replace old i with new updated i if true
+            }               
+            board[i] = 0;           //Reset move after trying
+        }
+    }
+
+    if(move == -1) 
+        return 0;
+    
+    return score;
+}
+
+/* Miscellaneous Functions */
+// Function to play an audio sound effect
+void audio(const char *audio_file){
+    // Play audio  file
+    ma_engine_play_sound(&miniaudio_engine, audio_file, NULL);
+}
+
+// Function to delay for a specified amount of seconds
+void delay(float seconds){
+    // Calculate number of clock cycles to wait for
+    clock_t wait = CLOCKS_PER_SEC * seconds;
+    // Get total number of clock cycles at the start
+    clock_t start = clock();
+    // Wait until the stipulated time has passed
+    while(clock() < start + wait);
+}
