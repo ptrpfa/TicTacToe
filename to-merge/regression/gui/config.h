@@ -6,12 +6,14 @@
 
 // Game Macros
 #define BOARDSIZE 9                             // Board size
+#define TIME_DELAY 0.05                         // Number of seconds to delay before computer makes its move
 #define WIN_SOUND "files/sound/win.wav"         // Audio to be played when player wins
 #define DRAW_SOUND "files/sound/draw.wav"       // Audio to be played when player gets a draw
 #define LOSE_SOUND "files/sound/lose.wav"       // Audio to be played when player loses
 #define P1_SOUND "files/sound/biu.wav"          // Audio to be played whenever the first player places a piece
 #define P2_SOUND "files/sound/crunk.wav"        // Audio to be played whenever the second player places a piece
-#define AI_SOUND "files/sound/computer.wav"     // Audio to be played whenever the computer player places a piece
+#define AI_SOUND "files/sound/computer1.wav"    // Audio to be played whenever the computer player places a piece
+#define AI_SOUND2 "files/sound/computer2.wav"   // Audio to be played whenever the computer player places a piece
 #define STYLES_FILE "files/styles.css"          // File containing the CSS styles for the GUI
 
 // Machine Learning Macros
@@ -47,6 +49,7 @@ int minimax(int player);                                                        
 int DisplayWin(int result);                                                             // Function to display the game results (2 Player Mode)
 int Display2Win(int result);                                                            // Function to display the game results (1 Player Mode)
 void audio();                                                                           // Function to play an audio sound effect
+void delay(float seconds);                                                              // Function to delay for a specified amount of seconds
 
 // GTK GUI Functions
 static void activate(GtkApplication* app, gpointer user_data);                          // Function to initialise GTK elements
@@ -61,6 +64,6 @@ void Restart();                                                                 
 void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);                          // Function to get the feature values for the current board's state
 float evaluateBoard(int features[NO_FEATURES], float weights[NO_FEATURES]);             // Function to evaluate and assign a value to a given board state
 void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]);                           // Function to reset the array of possible moves for the ML model to take
-void modelInput(int gameState[BOARDSIZE], float weights[NO_FEATURES], int playerNo);    // Function for ML model to evaluate the best possible move and make it
+int modelInput(float weights[NO_FEATURES], int playerNo);    // Function for ML model to evaluate the best possible move and make it
 void randomInput(int gameState[BOARDSIZE], int playerNo);                               // Function to make a random move
 void readWeights();                                                                     // Function to read the ML model's weights from the settings file                                                                                                       
