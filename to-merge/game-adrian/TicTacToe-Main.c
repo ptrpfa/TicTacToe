@@ -256,7 +256,6 @@ void BoardDesign(){
         GtkWidget* button;
         button = gtk_button_new_with_label(" "); //Set button name
         g_signal_connect(button, "clicked", G_CALLBACK (MainGameController), GINT_TO_POINTER(i));// (gpointer)i gives the current position of the button
-
         gtk_widget_set_tooltip_text(GTK_WIDGET(button), "Please select GameMode Bodoh!");
         gtk_widget_set_sensitive(button, 0);
         //Create CSS for the button

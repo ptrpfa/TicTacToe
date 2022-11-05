@@ -25,6 +25,5 @@ void readWeights();                                                             
 
 /* Game Functions */
 void printBoard(int gameState[BOARDSIZE]);          // Function to print current board state
-void clearBoard(int gameState[BOARDSIZE]);          // Function to clear the board state
 int getBoardStatus(int gameState[BOARDSIZE]);       // Function to get the current board's status (win/lose/draw)
 void playerInput(int playerNo);                     // Function to get player's input

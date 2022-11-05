@@ -515,13 +515,6 @@ void printBoard(int gameState[BOARDSIZE]) {
     printf("  %2d  |  %2d  |  %2d\n\n",gameState[6],gameState[7],gameState[8]);
 }
 
-// Function to clear the board state
-void clearBoard(int gameState[BOARDSIZE]) {
-    for (int i = 0; i < BOARDSIZE; i++) {
-        gameState[i] = 0;
-    }
-}
-
 // Function to get the current board's status (win/lose/draw/in progress)
 int getBoardStatus(int gameState[BOARDSIZE]) {
     // Default board status is 0 (draw)
