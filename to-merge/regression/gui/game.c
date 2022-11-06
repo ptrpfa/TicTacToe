@@ -14,7 +14,7 @@ ma_engine miniaudio_engine;
 int main (int argc, char**argv) {
     // Read in ML model's weights
     readWeights();
-    
+
     // Initialise Mini Audio engine
     miniaudio_result = ma_engine_init(NULL, &miniaudio_engine);
     // Check if the MA engine has been initialised successfully
@@ -354,122 +354,127 @@ int checkPlayerData(char n){
 }
 
 // Main game controller function
-static void MainGameController(GtkButton *button, gpointer data){    
+static void MainGameController(GtkButton *button, gpointer data){
     int result = 0;
     int move_index = 0;
+    // Game Mode Options: -1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)
     switch(gameModeOption){
-        case 1: /* 2 Player Mode */
-            // Get user's input
-            twoplayer(button, GPOINTER_TO_INT(data));
-            result = checkWin();
-            // Check board results
-            if(result !=0){ //Someone win or draw
+        case 1: 
+            /* 2 Player Mode */
+            twoplayer(button, GPOINTER_TO_INT(data));   // Get player's move
+            
+            // Check the board's status (win/lose/draw/in progress)
+            result = checkWin();                        
+            if(result !=0){
+                // Display results once game has ended
                 DisplayWin(result);
             } 
+            // Break out of case
             break;
         case 2: /* One Player Mode: Easy (against dumb AI, random moves) */
-            // Get First Player's input first
-            // Change the button label
-            gtk_button_set_label(GTK_WIDGET(button), "X");
-            CreateCSS(GTK_WIDGET(button),"xo");
-            audio(P1_SOUND); // Play sound effect for Player 1
-            // Update the global board;
-            move_index = GPOINTER_TO_INT(data);
-            board[move_index] = -1;
-            // Set the button to be non clickable after the player's move
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
-            //End of first player
-            // Check board results
+            /* First Player's Move */
+            gtk_button_set_label(GTK_WIDGET(button), "X");          // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                     // Add CSS class to button
+            audio(P1_SOUND);                                        // Play sound effect for Player 1
+            move_index = GPOINTER_TO_INT(data);                     // Get the player's move
+            board[move_index] = -1;                                 // Set the player's move on the board
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);        // Set the button to be non clickable after the player's move
+
+            // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
-            if(result == 0){ //No one win
-                // Dumb AI move
-                int move = randomInput(board, 1);
-                delay(TIME_DELAY); // Wait for a set period of time before making the move
-                board[move] = 1;   // Set AI's move
+            if(result == 0){ // Game still in progress
+                /* Dumb AI (Random)'s Move */
+                int move = randomInput(board, 1);           // Get random move
+                delay(TIME_DELAY);                          // Wait for a set period of time before making the move
+                board[move] = 1;                            // Set random move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                // Set the button text
-                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
-                CreateCSS(GTK_BUTTON(buttonChild),"xo");
-                audio(AI_SOUND3);
-                gtk_widget_set_sensitive(buttonChild, 0);
-                // Check if computer wins
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");     // Set the button text
+                CreateCSS(GTK_BUTTON(buttonChild),"xo");                // Add CSS class to button
+                audio(AI_SOUND3);                                       // Play sound effect for Computer Player
+                gtk_widget_set_sensitive(buttonChild, 0);               // Set the button to be non clickable after the computer's move
+                
+                // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){
+                    // Display results once game has ended
                     DisplayWin2(result);
                 }
-            }else{
+            }
+            else{
+                // Display results once game has ended
                 DisplayWin2(result);
             }
+            // Break out of case
             break;
-        case 3:  /* One Player Mode: Medium (against smart AI, trained using linear regression neural network) */
-            // Get First Player's input first
-            // Change the button label
-            gtk_button_set_label(GTK_WIDGET(button), "X");
-            CreateCSS(GTK_WIDGET(button),"xo");
-            // Play sound effect for Player 1
-            audio(P1_SOUND);
-            // Update the global board;
-            move_index = GPOINTER_TO_INT(data);
-            board[move_index] = -1;
-            // Set the button to be non clickable after the player's move
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
-            //End of first player
-            //Check Win
+        case 3:  /* One Player Mode: Medium (against Linear Regression Neural Network ML Model) */
+            /* First Player's Move */
+            gtk_button_set_label(GTK_WIDGET(button), "X");      // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                 // Add CSS class to button
+            audio(P1_SOUND);                                    // Play sound effect for Player 1
+            move_index = GPOINTER_TO_INT(data);                 // Get the player's move
+            board[move_index] = -1;                             // Set the player's move on the board
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);    // Set the button to be non clickable after the player's move
+
+            // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
-            if(result == 0){ //No one win
-                // AI Player Move
-                int move = modelInput(model_weights, 1);
-                delay(TIME_DELAY); // Wait for a set period of time before making the move
-                board[move] = 1;  // Set ML model's move
+            if(result == 0){ // Game still in progress
+                /* ML Model's Move */
+                int move = modelInput(model_weights, 1);        // Get ML Model's move
+                delay(TIME_DELAY);                              // Wait for a set period of time before making the move
+                board[move] = 1;                                // Set ML model's move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                // Set the button text
-                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
-                CreateCSS(GTK_BUTTON(buttonChild),"xo");
-                audio(AI_SOUND);
-                gtk_widget_set_sensitive(buttonChild, 0);
-                // Check if computer wins
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O"); // Set the button text
+                CreateCSS(GTK_BUTTON(buttonChild),"xo");            // Add CSS class to button
+                audio(AI_SOUND);                                    // Play sound effect for Computer Player
+                gtk_widget_set_sensitive(buttonChild, 0);           // Set the button to be non clickable after the computer's move
+                
+                // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){
+                    // Display results once game has ended
                     DisplayWin2(result);
                 }
-            }else{
+            }
+            else{
+                // Display results once game has ended
                 DisplayWin2(result);
             }
+            // Break out of case
             break;
         case 4:  /* One Player Mode: Hard (against Minimax Algorithm) */
-            // Get First Player's input first
-            // Change the button label
-            gtk_button_set_label(GTK_WIDGET(button), "X");
-            CreateCSS(GTK_WIDGET(button),"xo");
-            // Play sound effect for Player 1
-            audio(P1_SOUND);
-            // Update the global board;
-            move_index = GPOINTER_TO_INT(data);
-            board[move_index] = -1;
-            // Set the button to be non clickable after the player's move
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);
-            //End of first player
-            //Check Win
+            /* First Player's Move */
+            gtk_button_set_label(GTK_WIDGET(button), "X");      // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                 // Add CSS class to button
+            audio(P1_SOUND);                                    // Play sound effect for Player 1
+            move_index = GPOINTER_TO_INT(data);                 // Get the player's move
+            board[move_index] = -1;                             // Set the player's move on the board
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);    // Set the button to be non clickable after the player's move
+
+            // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
-            if(result == 0){ //No one win
-                //AI Player Move
-                int move = computerMove();
-                delay(TIME_DELAY); // Wait for a set period of time before making the move
-                board[move] = 1;   // AI played the best move 
+            if(result == 0){ // Game still in progress
+                /* MiniMax Algorithm's Move */
+                int move = computerMove();          // Get MiniMax Algorithm's move
+                delay(TIME_DELAY);                  // Wait for a set period of time before making the move
+                board[move] = 1;                    // Set MiniMax Algorithm's move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                //Set the button text
-                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");
-                CreateCSS(GTK_BUTTON(buttonChild),"xo");
-                audio(AI_SOUND2);
-                gtk_widget_set_sensitive(buttonChild, 0);
-                //Check if computer wins
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O"); // Set the button text
+                CreateCSS(GTK_BUTTON(buttonChild),"xo");            // Add CSS class to button
+                audio(AI_SOUND2);                                   // Play sound effect for Computer Player
+                gtk_widget_set_sensitive(buttonChild, 0);           // Set the button to be non clickable after the computer's move
+                
+                // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){
+                    // Display results once game has ended
                     DisplayWin2(result);
                 }
-            }else{
+            }
+            else{
+                // Display results once game has ended
                 DisplayWin2(result);
             }
+            // Break out of case
             break;
     }
 }
@@ -765,6 +770,34 @@ int modelInput(float weights[NO_FEATURES], int playerNo) {
     // Return the best move
     return best_move;
 }         
+
+// Function to write the ML model's weights to the settings file   
+void writeWeights() {
+    // Initialise file pointer for writing
+    FILE *settings_file = fopen(SETTINGS_FILE, "w");
+    // Check if file pointer is valid
+    if (settings_file == NULL){
+        printf("%s does not exist!\n", SETTINGS_FILE);
+        exit(1);
+    }
+    // Write ML model's weights to the file
+    for (int i = 0; i < NO_FEATURES; i++){
+        fprintf(settings_file, "w%d = %f\n", i, model_weights[i]);
+    }
+    // Close file pointer
+    fclose(settings_file);
+}   
+
+// Function to update the weights for the ML model features
+void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated) {
+    for (int i = 0; i < NO_FEATURES; i++) {
+        // Update each weight to obtain lower mean squared error
+	    weights[i] = weights[i] + learningConstant * (target_actual - target_estimated) * features[i];
+    }
+    // Update settings file
+    writeWeights();
+}
+
 
 /* Minimax Algorithm Functions */
 // Function to get the MiniMax computer input (One Player Mode: Hard)

@@ -23,7 +23,7 @@
 
 /* Global Variables */
 // Game Variables
-int gameModeOption = -1;                                                                                                                                // Variable to track the current game mode (-1: Game in progress)
+int gameModeOption = -1;                                                                                                                                // Variable to track the current game mode [-1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)]
 static int player = -1;                                                                                                                                 // Variable to track the current player (-1: Player 1, 1: Player 2)
 int board[9] = {0,0,0,0,0,0,0,0,0};                                                                                                                     // Global board state
 int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};                                                               // Array containing the legal board configurations that qualify as a win
@@ -37,6 +37,7 @@ GtkWidget *window, *headerlabel, *boardGrid, *settingGrid, *StartBtn, *gameModeM
 int board_features[NO_FEATURES];                                                                                                                        // Array containing the feature values for the current board state
 float model_weights[NO_FEATURES] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};                                                                                 // Array containing weights for each feature
 int possible_moves[BOARDSIZE][BOARDSIZE + 1];                                                                                                           // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
+float learningRate = 0.001;                                                                                                                             // Learning rate for ML model
 
 /* Function Prototypes */
 // Game Functions
