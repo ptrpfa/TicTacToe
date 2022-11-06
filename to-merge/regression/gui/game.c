@@ -24,12 +24,12 @@ int main (int argc, char**argv) {
     }
     
     // Create a GTKApplication object
-    GtkApplication* app; //app is the GTKApplication 
+    GtkApplication* app; // app is the GTKApplication 
     int status;
-    app = gtk_application_new(NULL, G_APPLICATION_DEFAULT_FLAGS); //Init App, Parameter: application name, flags for special needs 
-    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);//Connect App with the 'activate' function, or the settings for the GUI
-    status = g_application_run(G_APPLICATION(app), argc, argv); //Accpets command line argument with argc and argv
-    g_object_unref(app); //Remove it from memory
+    app = gtk_application_new(NULL, G_APPLICATION_DEFAULT_FLAGS);   // Init App, Parameter: application name, flags for special needs 
+    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);  // Connect App with the 'activate' function, or the settings for the GUI
+    status = g_application_run(G_APPLICATION(app), argc, argv);     // Accepts command line argument with argc and argv
+    g_object_unref(app);                                            // Remove it from memory
     
     // Close Mini Audio engine
     ma_engine_uninit(&miniaudio_engine);
@@ -357,6 +357,13 @@ int checkPlayerData(char n){
 static void MainGameController(GtkButton *button, gpointer data){
     int result = 0;
     int move_index = 0;
+
+    // Initialise variables for ML model's continual learning
+    int board_status = 0, game_result = 0, base_player = 1; // Base player is the primary player that we are using to train the ML model
+    int starting_board_features_player[NO_FEATURES] = {};   // Array to keep a copy of the starting board's features before the player's move
+    int starting_board_features_ai[NO_FEATURES] = {};       // Array to keep a copy of the starting board's features before the computer's move
+    float starting_score_player, intermediate_score_player, final_score_player, starting_score_ai, intermediate_score_ai, final_score_ai;
+    
     // Game Mode Options: -1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)
     switch(gameModeOption){
         case 1: 
@@ -406,7 +413,15 @@ static void MainGameController(GtkButton *button, gpointer data){
             }
             // Break out of case
             break;
-        case 3:  /* One Player Mode: Medium (against Linear Regression Neural Network ML Model) */
+        case 3:  /* One Player Mode: Medium (against continual learning Linear Regression Neural Network ML Model) */
+            // Get the features and score of the current board before the first player's move
+            getBoardFeatures(board, base_player);                                   // Get pre-move board features for the base player
+            starting_score_player = evaluateBoard(board_features, model_weights);   // Get pre-move board score
+            // Make a copy of the current board features before the first player's move
+            for (int j = 0; j < NO_FEATURES; j++){
+                starting_board_features_player[j] = board_features[j];
+            }
+
             /* First Player's Move */
             gtk_button_set_label(GTK_WIDGET(button), "X");      // Change the button label
             CreateCSS(GTK_WIDGET(button),"xo");                 // Add CSS class to button
@@ -418,6 +433,20 @@ static void MainGameController(GtkButton *button, gpointer data){
             // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
             if(result == 0){ // Game still in progress
+                // Get the features and score of the intermediate board, after the first player's move
+                getBoardFeatures(board, base_player);                                       // Get intermediate board features for the base player
+                intermediate_score_player = evaluateBoard(board_features, model_weights);   // Get intermediate board score
+                // Update ML model's weights after intermediate board with first player's move
+                updateWeights(learningRate, starting_board_features_player, model_weights, intermediate_score_player, starting_score_player); // intermediate_score (player) is the actual value, starting_score (player) is the predicted value
+
+                // Get the features and score of the current board before the computer player's move
+                getBoardFeatures(board, base_player);                               // Get pre-move board features for the base player
+                starting_score_ai = evaluateBoard(board_features, model_weights);   // Get pre-move board score
+                // Make a copy of the current board features before the computer player's move
+                for (int j = 0; j < NO_FEATURES; j++){
+                    starting_board_features_ai[j] = board_features[j];
+                }
+
                 /* ML Model's Move */
                 int move = modelInput(model_weights, 1);        // Get ML Model's move
                 delay(TIME_DELAY);                              // Wait for a set period of time before making the move
@@ -430,12 +459,51 @@ static void MainGameController(GtkButton *button, gpointer data){
                 
                 // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
-                if(result != 0){
+                if(result != 0){ // End of game
+                    // Set game results (2: Draw, -1: Player 1 won, 1: Player 2 won, 0: In progress)
+                    if (result == 2){
+                        game_result = 0; // Draw for Player 1
+                    }
+                    else if (result == -1){
+                        game_result = 1; // Win for Player 1
+                    }
+                    else {
+                        game_result = -1; // Loss for Player 1
+                    }
+                    // Get the post-game features and score after the computer player's move 
+                    getBoardFeatures(board, base_player);                           // Get post-game board features for the base player
+                    final_score_ai = evaluateBoard(board_features, model_weights);  // Get post-game board score
+                    // Update ML model's weights after computer player's move that led to a game completion
+                    updateWeights(learningRate, starting_board_features_ai, model_weights, game_result, final_score_ai); // game_result is the actual value, final_score (ai) is the predicted value
+
                     // Display results once game has ended
                     DisplayWin2(result);
                 }
+                else { // Game still in progress
+                    // Get the features and score of the intermediate board, after the computer player's move
+                    getBoardFeatures(board, base_player);                                   // Get intermediate board features for the base player
+                    intermediate_score_ai = evaluateBoard(board_features, model_weights);   // Get intermediate board score
+                    // Update ML model's weights after intermediate board with computer player's move
+                    updateWeights(learningRate, starting_board_features_ai, model_weights, intermediate_score_ai, starting_score_ai); // intermediate_score (ai) is the actual value, starting_score (ai) is the predicted value
+                }
             }
-            else{
+            else { // End of game
+                // Set game results (2: Draw, -1: Player 1 won, 1: Player 2 won, 0: In progress)
+                if (result == 2){
+                    game_result = 0; // Draw for Player 1
+                }
+                else if (result == -1){
+                    game_result = 1; // Win for Player 1
+                }
+                else {
+                    game_result = -1; // Loss for Player 1
+                }
+                // Get the post-game features and score after the first player's move 
+                getBoardFeatures(board, base_player);                               // Get post-game board features for the base player
+                final_score_player = evaluateBoard(board_features, model_weights);  // Get post-game board score
+                // Update ML model's weights after first player's move that led to a game completion
+                updateWeights(learningRate, starting_board_features_player, model_weights, game_result, final_score_player); // game_result is the actual value, final_score (player) is the predicted value
+
                 // Display results once game has ended
                 DisplayWin2(result);
             }
@@ -797,7 +865,6 @@ void updateWeights(float learningConstant, int features[NO_FEATURES], float weig
     // Update settings file
     writeWeights();
 }
-
 
 /* Minimax Algorithm Functions */
 // Function to get the MiniMax computer input (One Player Mode: Hard)

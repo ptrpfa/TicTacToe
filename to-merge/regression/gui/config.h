@@ -69,3 +69,5 @@ void resetPossibleMoves(int moves[BOARDSIZE][BOARDSIZE + 1]);                   
 int modelInput(float weights[NO_FEATURES], int playerNo);                               // Function for ML model to evaluate the best possible move
 int randomInput(int gameState[BOARDSIZE], int playerNo);                                // Function to generate a random move
 void readWeights();                                                                     // Function to read the ML model's weights from the settings file                                                                                                       
+void writeWeights();                                                                    // Function to write the ML model's weights to the settings file   
+void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated);     // Function to update the weights for the ML model features
