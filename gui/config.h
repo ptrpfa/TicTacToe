@@ -2,23 +2,25 @@
 
 /* Macro Definitions */
 // Miscellaneous Macros
+#define FILE_DIR "files/"                       // Parent directory for all files
+#define SOUND_DIR FILE_DIR "sound/"             // Directory containing sound files
 #define MINIAUDIO_IMPLEMENTATION                // Mini Audio library macro
 
 // Game Macros
 #define BOARDSIZE 9                             // Board size
 #define TIME_DELAY 0.05                         // Number of seconds to delay before computer makes its move
-#define WIN_SOUND "files/sound/win.wav"         // Audio to be played when player wins
-#define DRAW_SOUND "files/sound/draw.wav"       // Audio to be played when player gets a draw
-#define LOSE_SOUND "files/sound/lose.wav"       // Audio to be played when player loses
-#define P1_SOUND "files/sound/biu.wav"          // Audio to be played whenever the first player places a piece
-#define P2_SOUND "files/sound/crunk.wav"        // Audio to be played whenever the second player places a piece
-#define AI_SOUND "files/sound/computer1.wav"    // Audio to be played whenever the computer player places a piece
-#define AI_SOUND2 "files/sound/computer2.wav"   // Audio to be played whenever the computer player places a piece
-#define AI_SOUND3 "files/sound/computer3.wav"   // Audio to be played whenever the computer player places a piece
-#define STYLES_FILE "files/styles.css"          // File containing the CSS styles for the GUI
+#define WIN_SOUND SOUND_DIR "win.wav"           // Audio to be played when player wins
+#define DRAW_SOUND SOUND_DIR "draw.wav"         // Audio to be played when player gets a draw
+#define LOSE_SOUND SOUND_DIR "lose.wav"         // Audio to be played when player loses
+#define P1_SOUND SOUND_DIR "biu.wav"            // Audio to be played whenever the first player places a piece
+#define P2_SOUND SOUND_DIR "crunk.wav"          // Audio to be played whenever the second player places a piece
+#define AI_SOUND SOUND_DIR "computer1.wav"      // Audio to be played whenever the computer player places a piece
+#define AI_SOUND2 SOUND_DIR "computer2.wav"     // Audio to be played whenever the computer player places a piece
+#define AI_SOUND3 SOUND_DIR "computer3.wav"     // Audio to be played whenever the computer player places a piece
+#define STYLES_FILE FILE_DIR "styles.css"       // File containing the CSS styles for the GUI
 
 // Machine Learning Macros
-#define SETTINGS_FILE "files/weights.txt"       // File containing the ML model's weights
+#define SETTINGS_FILE FILE_DIR "weights.txt"    // File containing the ML model's weights
 #define NO_FEATURES 7                           // Number of features
 
 /* Global Variables */
