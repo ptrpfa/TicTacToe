@@ -14,14 +14,6 @@ ma_engine miniaudio_engine;
 int main (int argc, char**argv) {
     // Read in ML model's weights
     readWeights();
-
-    // Initialise Mini Audio engine
-    miniaudio_result = ma_engine_init(NULL, &miniaudio_engine);
-    // Check if the MA engine has been initialised successfully
-    if (miniaudio_result != MA_SUCCESS) {
-        printf("Failed to initialize Mini Audio Engine!");
-        exit(1);
-    }
     
     // Create a GTKApplication object
     GtkApplication* app; // app is the GTKApplication 
@@ -47,6 +39,14 @@ static void activate(GtkApplication* app, gpointer user_data){
     gtk_window_set_title( GTK_WINDOW(window), "Tic Tac Toe"); //Set Window Title
     gtk_window_set_default_size(GTK_WINDOW(window), 1000, 750); 
     /*End Window Creation*/
+
+    // Initialise Mini Audio engine
+    miniaudio_result = ma_engine_init(NULL, &miniaudio_engine);
+    // Check if the MA engine has been initialised successfully
+    if (miniaudio_result != MA_SUCCESS) {
+        printf("Failed to initialize Mini Audio Engine!");
+        exit(1);
+    }
 
     //CSS
     CreateCSS(window, NULL);
