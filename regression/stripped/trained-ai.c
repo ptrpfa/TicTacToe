@@ -10,7 +10,6 @@
 // Program entrypoint
 int main(int argc, char * argv[]) {
 
-    
     // Get pre-defined ML model weights from settings file
     readWeights();
     
