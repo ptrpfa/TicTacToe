@@ -21,47 +21,53 @@
 
 // Machine Learning Macros
 #define SETTINGS_FILE FILE_DIR "weights.txt"    // File containing the ML model's weights
-#define NO_FEATURES 7                           // Number of features
+#define NO_FEATURES 7                           // Number of features                                                                                                                        // Learning rate for ML model
 
 /* Global Variables */
 // Game Variables
-int gameModeOption = -1;                                                                                                                                // Variable to track the current game mode [-1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)]
-static int player = -1;                                                                                                                                 // Variable to track the current player (-1: Player 1, 1: Player 2)
-int board[9] = {0,0,0,0,0,0,0,0,0};                                                                                                                     // Global board state
-int board_wins[8][3] = {{0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6}};                                                               // Array containing the legal board configurations that qualify as a win
+extern int gameModeOption;                                                                                                                                // Variable to track the current game mode [-1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)]
+extern int player;                                                                                                                                 // Variable to track the current player (-1: Player 1, 1: Player 2)
+extern int board[9];                                                                                                                   // Global board state
+extern int board_wins[8][3];                                                                // Array containing the legal board configurations that qualify as a win
 
 // GTK GUI Variables
-const char *gamemodeLabel[] = { "\nPLEASE SELECT A GAME MODE\n", "\n TWO PLAYER MODE\n", "\nONE PLAYER MODE (EASY)\n", "\nONE PLAYER MODE (MEDIUM)\n", "\nONE PLAYER MODE (HARD)\n"};   // Game mode options
-int ButtonPos[9][2] = {{0,0},{160,0},{320,0}, {0,160},{160,160},{320,160}, {0,320},{160,320},{320,320}};                                                // Tic Tac Toe button positions
-GtkWidget *window, *headerlabel, *boardGrid, *settingGrid, *StartBtn, *gameModeMenu;                                                                    // GTK elements
+extern const char *gamemode[];   // Game mode options
+extern int ButtonPos[9][2];                                                // Tic Tac Toe button positions
+extern GtkWidget *window;
+extern GtkWidget *headerlabel;
+extern GtkWidget *boardGrid;
+extern GtkWidget *settingGrid;
+extern GtkWidget *StartBtn;
+extern GtkWidget *gameModeMenu;                                                                    // GTK elements
 
 // Machine Learning Variables
-int board_features[NO_FEATURES];                                                                                                                        // Array containing the feature values for the current board state
-float model_weights[NO_FEATURES] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};                                                                                 // Array containing weights for each feature
-int possible_moves[BOARDSIZE][BOARDSIZE + 1];                                                                                                           // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
-float learningRate = 0.001;                                                                                                                             // Learning rate for ML model
+extern int board_features[NO_FEATURES];                                                                                                                        // Array containing the feature values for the current board state
+extern float model_weights[NO_FEATURES];                                                                                 // Array containing weights for each feature
+extern int possible_moves[BOARDSIZE][BOARDSIZE + 1];                                                                                                           // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
+extern float learningRate; 
 
 /* Function Prototypes */
 // Game Functions
 void BoardDesign();                                                                     // Function to create the Tic Tac Toe board design
-static void MainGameController(GtkButton *button, gpointer data);                       // Main game controller function
+void MainGameController(GtkButton *button, gpointer data);                       // Main game controller function
 int checkPlayerData(char n);                                                            // Function for checking the player number of a given game piece
 int checkWin();                                                                         // Function to get the current board's status (win/lose/draw/in progress)
 void twoplayer(GtkButton *button, int data);                                            // Function to get inputs for 2 Player Mode
 int computerMove();                                                                     // Function to get the MiniMax computer input
 int minimax(int player);                                                                // MiniMax algorithm
 int DisplayWin(int result);                                                             // Function to display the game results (2 Player Mode)
-int Display2Win(int result);                                                            // Function to display the game results (1 Player Mode)
-void audio();                                                                           // Function to play an audio sound effect
+int DisplayWin2(int result);                                                            // Function to display the game results (1 Player Mode)
+void audio(const char *audio_file);                                                     // Function to play an audio sound effect
 void delay(float seconds);                                                              // Function to delay for a specified amount of seconds
-
+void miniaudio_init();
+void miniaudio_close();
 // GTK GUI Functions
-static void activate(GtkApplication* app, gpointer user_data);                          // Function to initialise GTK elements
+void activate(GtkApplication* app, gpointer user_data);                          // Function to initialise GTK elements
 void CreateCSS(GtkWidget *widget, const char *class_name);                              // Function to set the CSS styling for the GUI
 void Designer();                                                                        // Design controller for the GUI
 void SettingDesign();                                                                   // Function for the design of the settings bar
-static void modeController(GtkDropDown  *dropdown, gpointer *data);                     // Function for controlling the game mode selection
-static void Start(GtkWidget *widget, gpointer *data);                                   // Start function
+void modeController(GtkDropDown  *dropdown, gpointer *data);                     // Function for controlling the game mode selection
+void Start(GtkWidget *widget, gpointer *data);                                   // Start function
 void Restart();                                                                         // Restart function
 
 // Machine Learning Functions
