@@ -18,7 +18,7 @@ void twoplayer(GtkButton *button, int data){
         gtk_widget_set_sensitive(GTK_WIDGET(button), 0); 
         player = 1; // Change to the next player (Player 2)
     }
-    else if(player = 1){ // Second Player
+    else if(player == 1){ // Second Player
         // Play sound effect for the second player
         audio(P2_SOUND);
         // Change the button label

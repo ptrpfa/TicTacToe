@@ -4,7 +4,7 @@
 #include "../header/miniaudio.h"    // Include miniaudio file
 
 /* Miscellaneous Functions */
-//MiniAudio Variables
+// MiniAudio Variables
 ma_engine miniaudio_engine;
 
 // Function to delay for a specified amount of seconds

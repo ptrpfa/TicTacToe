@@ -1,6 +1,27 @@
 #include <gtk/gtk.h>                // Include GTK library for GUI
 #include "../header/config.h"       // Include configuration file
 
+/* Minimax Algorithm Functions */
+// Function to get the MiniMax computer input (One Player Mode: Hard)
+int computerMove(){
+    int move = -1;          
+    int score = -2;
+    int i;
+    for(i = 0; i < 9; ++i) {        // for all moves
+        if(board[i] == 0) {         // if its unoccupied
+            board[i] = 1;           // try the move 
+            int tempScore = -minimax(-1);    // calculate the score for the move
+            board[i] = 0;           // reset the move 
+            if(tempScore > score) {     // check if its greater than prev move 
+                score = tempScore;          // maximising the score 
+                move = i;                   // replace old i with new updated i if true
+            }
+        }
+    }
+    //returns a score based on minimax tree at a given node.
+    return move;
+}
+
 // MiniMax algorithm
 int minimax(int player) { //P vs Minimax
     //How is the position like for player (their turn) on board?

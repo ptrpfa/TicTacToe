@@ -235,7 +235,7 @@ int checkWin() {
 
 
 // Function to display the game results (2 Player Mode)
-int DisplayWin(int result){
+void DisplayWin(int result){
 
     GtkWidget* buttonChild;
     switch(result){
@@ -265,7 +265,7 @@ int DisplayWin(int result){
 }
 
 // Function to display the game results (1 Player Mode)
-int DisplayWin2(int result){
+void DisplayWin2(int result){
 
     GtkWidget* buttonChild;
     switch(result){
