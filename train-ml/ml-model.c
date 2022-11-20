@@ -782,7 +782,6 @@ void simulateGames(int game_length, float weights[NO_FEATURES]) {
 
             /* Update ML model's weights after each intermediate board */
             updateWeights(learningRate, starting_board_features, model_weights, intermediate_score, starting_score); // intermediate_score is the actual value, starting_score is the predicted value
-            printf("\n\nStarting score: %f\nIntermediate score: %f\n\n", starting_score, intermediate_score);
         }
         // Set game results
         if (board_status == 0){
