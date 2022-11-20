@@ -18,7 +18,40 @@ This program measures the performance of the regression model on the training an
   - Refers to the mean of the absolute values of the individual estimated score errors
 - Game results against simulated random computer player (1,000,000 games)
   - Computes the total number of wins, draws, and losses by the regression model against an emulated computer player that makes a random move for each turn
+### Results
+---
+After training and optimising the model, the following set of optimal weights are derived:
+```
+w0 = -0.537699
+w1 = -0.025055
+w2 = -0.292842
+w3 = 1.289685
+w4 = -0.252367
+w5 = -0.221150
+w6 = 1.003676
+``` 
+Mean Squared Error for Training Data: 0.861692
+Root Mean Square Error for Training Data: 0.928274
+Mean Absolute Error for Training Data: 0.776785
 
+Mean Squared Error for Test Data: 0.749555
+Root Mean Square Error for Test Data: 0.865769
+Mean Absolute Error for Test Data: 0.617598
+### Program Files
+---
+```
+README.md (this file)
+
+docs/ (contains images)
+
+dataset/ (contains dataset)
+
+config.h (configuration file)
+
+ml-model.c (main program)
+
+weights.txt (contains optimal model weights)
+```
 ### Program Usage
 ---
 1. Download source code (no external libraries are required).
@@ -31,7 +64,7 @@ This program measures the performance of the regression model on the training an
     `./ml-model train ` <br><br>
     *\*By default, the code for running the simulated games against a random computer player to evaluate the model's performance is commented out, as it may take a while to run 1,000,000 games!*
 
-#### Sample program execution previews
+### Sample program execution previews
 ---
 Normal Usage<br>
 ![Normal Usage](docs/normal-game.png)
