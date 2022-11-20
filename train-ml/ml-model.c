@@ -5,22 +5,11 @@
 #include <time.h>
 #include "config.h"
 
-/* 
-    Program usage:
-    1) Compilation
-        gcc -o ml-model ml-model.c
-    2) Run program 
-        a) Normal usage (play Tic Tac Toe game)
-            ./ml-model
-        b) Train regression model and play Tic Tac Toe game
-            ./ml-model train
-*/
-
 // Program entrypoint
 int main(int argc, char * argv[]) {
 
     // Check command line arguments
-    if (argc == 2 && strcmp(argv[1], "train") == 0) {
+    if (argc >= 2 && (strcmp(argv[1], "train") == 0 || strcmp(argv[1], "train-all") == 0)) {
         /* Train ML Model */
         // Simulate a specified number of games (AI vs AI) to pre-train the ML model
         simulateGames(NO_SIMULATION, model_weights);
@@ -31,7 +20,9 @@ int main(int argc, char * argv[]) {
         trainModel(training_dataset, model_weights);
         testModel(test_dataset, model_weights, 0);
         // Evaluate performance of ML model over a specified amount of games
-        // evaluatePerformance(1000000);
+        if (strcmp(argv[1], "train-all") == 0) {
+            evaluatePerformance(1000000);
+        }
     }
     else {
         // Get pre-defined ML model weights from settings file

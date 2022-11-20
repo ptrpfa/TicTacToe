@@ -1,4 +1,11 @@
 ## Multi-Linear Regression Model Training 
+List of Contents
+- [Brief Overview](#brief-overview)
+- [Model Training](#model-training)
+- [Model Performance](#model-performance)
+- [Results](#results)
+- [Program Files](#program-files)
+- [Program Usage](#program-usage)
 ### Brief Overview
 ---
 This supplementary program trains the Multi-Linear Regression model that will be used in the main Tic Tac Toe game program. Apart from just training the regression model, this program also includes game playing functionalities for the user to play a game against the model. To learn more about how the move selection algorithm works and more details on the machine learning algorithm used, please refer to the report or view the source code directly.
@@ -30,13 +37,23 @@ w4 = -0.252367
 w5 = -0.221150
 w6 = 1.003676
 ``` 
+The results for the trained model are as follows:
+```
+Training Data metrics:
 Mean Squared Error for Training Data: 0.861692
 Root Mean Square Error for Training Data: 0.928274
 Mean Absolute Error for Training Data: 0.776785
 
+Test Data metrics:
 Mean Squared Error for Test Data: 0.749555
 Root Mean Square Error for Test Data: 0.865769
 Mean Absolute Error for Test Data: 0.617598
+
+Total games played against dumb AI: 1000000
+Wins: 899703
+Draws: 34559
+Losses: 65738
+```
 ### Program Files
 ---
 ```
@@ -60,9 +77,10 @@ weights.txt (contains optimal model weights)
 3. Run the program!<br>
   - For normal usage (play against trained model), no additional command line arguments are required <br>
     `./ml-model` <br><br>
-  - To train the models, ensure that the 'train' command line argument is added. <br>
-    `./ml-model train ` <br><br>
-    *\*By default, the code for running the simulated games against a random computer player to evaluate the model's performance is commented out, as it may take a while to run 1,000,000 games!*
+  - To train the model, ensure that the 'train' or 'train-all' command line argument is added. <br>
+    `./ml-model train` <br><br>
+    `./ml-model train-all` <br><br>
+    *\*By default, the first option will not run simulated games against a random computer player to evaluate the model's performance, as it may take a while to run 1,000,000 games!*
 
 ### Sample program execution previews
 ---
