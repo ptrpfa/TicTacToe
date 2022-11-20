@@ -55,8 +55,8 @@ int checkWin();                                                                 
 void twoplayer(GtkButton *button, int data);                                            // Function to get inputs for 2 Player Mode
 int computerMove();                                                                     // Function to get the MiniMax computer input
 int minimax(int player);                                                                // MiniMax algorithm
-void DisplayWin(int result);                                                             // Function to display the game results (2 Player Mode)
-void DisplayWin2(int result);                                                            // Function to display the game results (1 Player Mode)
+void DisplayWin(int result);                                                            // Function to display the game results (2 Player Mode)
+void DisplayWin2(int result);                                                           // Function to display the game results (1 Player Mode)
 void audio(const char *audio_file);                                                     // Function to play an audio sound effect
 void delay(float seconds);                                                              // Function to delay for a specified amount of seconds
 void miniaudio_init();

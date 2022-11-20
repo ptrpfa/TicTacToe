@@ -233,7 +233,6 @@ int checkWin() {
     return board_status;
 }
 
-
 // Function to display the game results (2 Player Mode)
 void DisplayWin(int result){
 
@@ -293,4 +292,3 @@ void DisplayWin2(int result){
     }
 
 }
-
