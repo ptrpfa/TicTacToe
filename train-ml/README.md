@@ -1,9 +1,7 @@
 ## Multi-Linear Regression Model Training 
 ### Brief Overview
 ---
-This supplementary program trains the Multi-Linear Regression model that will be used in the main Tic Tac Toe game program. <br>
-Apart from just training the regression model, this program also includes game playing functionalities for the user to play a game against the model.<br>
-To learn more about how the move selection algorithm works, please refer to the report or view the source code directly.
+This supplementary program trains the Multi-Linear Regression model that will be used in the main Tic Tac Toe game program. Apart from just training the regression model, this program also includes game playing functionalities for the user to play a game against the model. To learn more about how the move selection algorithm works, please refer to the report or view the source code directly.
 ### Training
 ---
 The multi-linear regression model is trained in two stages:
@@ -27,10 +25,11 @@ This program measures the performance of the regression model on the training an
 2. Compile the program.<br>
     `gcc -o ml-model ml-model.c`<br><br>
 3. Run the program!<br>
-  - To train the models, ensure the 'train' command line argument is added. Do note that by default, the code for running the simulated games against a random computer player to evaluate the model's performance is commented out, as it may take a while to run 1,000,000 games! <br>
-    `./ml-model train ` <br>
   - For normal usage (play against trained model), no additional command line arguments are required <br>
-    `./ml-model`
+    `./ml-model` <br><br>
+  - To train the models, ensure the 'train' command line argument is added. <br>
+    `./ml-model train ` <br><br>
+    *\*By default, the code for running the simulated games against a random computer player to evaluate the model's performance is commented out, as it may take a while to run 1,000,000 games!*
 
 #### Sample program execution previews
 ---
