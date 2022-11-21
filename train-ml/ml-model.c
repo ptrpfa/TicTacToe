@@ -589,6 +589,7 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
     // Variables for calculating the probability of error and confusion matrix values
     // float sum_prob_error = 0, prob_error = 0;
     // int true_win = 0, false_win = 0, true_draw = 0, false_draw = 0, true_loss = 0, false_loss = 0;
+    // int false_wind = 0, false_winl = 0, false_draww = 0, false_drawl = 0, false_lossw = 0, false_lossd = 0;
     // Loop through each training data
     for (int i = 0; i < TRAINING_SIZE; i++) {
         // Print training data
@@ -617,24 +618,33 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
         //         if (actual_score == predicted_score) {
         //             true_win++;
         //         }
+        //         else if (predicted_score == 0) {
+        //             false_wind++;
+        //         }
         //         else {
-        //             false_win++;
+        //             false_winl++;
         //         }
         //         break;
         //     case 0: // draw
         //         if (actual_score == predicted_score) {
         //             true_draw++;
         //         }
+        //         else if (predicted_score == 1) {
+        //             false_draww++;
+        //         }
         //         else {
-        //             false_draw++;
+        //             false_drawl++;
         //         }
         //         break;
         //     case -1: // loss
         //         if (actual_score == predicted_score) {
         //             true_loss++;
         //         }
+        //         else if (predicted_score == 1) {
+        //             false_lossw++;
+        //         }
         //         else {
-        //             false_loss++;
+        //             false_lossd++;
         //         }
         //         break;
         // };
@@ -657,7 +667,10 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
     // Calculate probabilty of error
     // prob_error = sum_prob_error / TRAINING_SIZE;
     printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
-    // printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\nSum of Errors: %f\nProbability of Errors: %f\nTrue Wins: %d\nFalse Wins: %d\nTrue Draws: %d\nFalse Draws: %d\nTrue Losses: %d\nFalse Losses: %d\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error, true_win, false_win, true_draw, false_draw, true_loss, false_loss);
+    // printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\nSum of Errors: %f\nProbability of Errors: %f\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error);
+    // printf("True Wins: %d\nFalse Wins (Draw): %d\nFalse Wins (Loss): %d\n", true_win, false_wind, false_winl);
+    // printf("True Draws: %d\nFalse Draws (Win): %d\nFalse Draws (Loss): %d\n", true_draw, false_draww, false_drawl);
+    // printf("True Losses: %d\nFalse Losses (Win): %d\nFalse Losses (Draw): %d\n\n", true_loss, false_lossw, false_lossd);
 }
 
 // Function to test regression model against the testing dataset
@@ -696,6 +709,7 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
     // Variables for calculating the probability of error and confusion matrix values
     // float sum_prob_error = 0, prob_error = 0;
     // int true_win = 0, false_win = 0, true_draw = 0, false_draw = 0, true_loss = 0, false_loss = 0;
+    // int false_wind = 0, false_winl = 0, false_draww = 0, false_drawl = 0, false_lossw = 0, false_lossd = 0;
     // Loop through each test data
     for (int i = 0; i < TEST_SIZE; i++) {
         // Print test data
@@ -720,24 +734,33 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
         //         if (actual_score == predicted_score) {
         //             true_win++;
         //         }
+        //         else if (predicted_score == 0) {
+        //             false_wind++;
+        //         }
         //         else {
-        //             false_win++;
+        //             false_winl++;
         //         }
         //         break;
         //     case 0: // draw
         //         if (actual_score == predicted_score) {
         //             true_draw++;
         //         }
+        //         else if (predicted_score == 1) {
+        //             false_draww++;
+        //         }
         //         else {
-        //             false_draw++;
+        //             false_drawl++;
         //         }
         //         break;
         //     case -1: // loss
         //         if (actual_score == predicted_score) {
         //             true_loss++;
         //         }
+        //         else if (predicted_score == 1) {
+        //             false_lossw++;
+        //         }
         //         else {
-        //             false_loss++;
+        //             false_lossd++;
         //         }
         //         break;
         // };
@@ -769,7 +792,10 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
     // Calculate probabilty of error
     // prob_error = sum_prob_error / TEST_SIZE;
     printf("\nMean Squared Error for Test Data: %f\nRoot Mean Square Error for Test Data: %f\nMean Absolute Error for Test Data: %f\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
-    // printf("\nMean Squared Error for Test Data: %f\nRoot Mean Square Error for Test Data: %f\nMean Absolute Error for Test Data: %f\nSum of Errors: %f\nProbability of Errors: %f\nTrue Wins: %d\nFalse Wins: %d\nTrue Draws: %d\nFalse Draws: %d\nTrue Losses: %d\nFalse Losses: %d\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error, true_win, false_win, true_draw, false_draw, true_loss, false_loss);
+    // printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\nSum of Errors: %f\nProbability of Errors: %f\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error);
+    // printf("True Wins: %d\nFalse Wins (Draw): %d\nFalse Wins (Loss): %d\n", true_win, false_wind, false_winl);
+    // printf("True Draws: %d\nFalse Draws (Win): %d\nFalse Draws (Loss): %d\n", true_draw, false_draww, false_drawl);
+    // printf("True Losses: %d\nFalse Losses (Win): %d\nFalse Losses (Draw): %d\n\n", true_loss, false_lossw, false_lossd);
 }
 
 // Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
