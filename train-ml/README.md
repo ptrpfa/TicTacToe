@@ -68,6 +68,8 @@ config.h (configuration file)
 ml-model.c (main program)
 
 weights.txt (contains optimal model weights)
+
+run.sh (script for running program)
 ```
 ### Program Usage
 ---
@@ -81,6 +83,12 @@ weights.txt (contains optimal model weights)
     `./ml-model train` <br><br>
     `./ml-model train-all` <br><br>
     *\*By default, the first option will not run simulated games against a random computer player to evaluate the model's performance, as it may take a while to run 1,000,000 games!*
+<br><br>
+Alternatively, you can compile and run the program simply by running the *run.sh* script!
+1. Add executable permissions for the script. <br>
+  `chmod +x run.sh`
+2. Run the script!<br>
+  `./run.sh`
 
 ### Sample program execution previews
 ---
