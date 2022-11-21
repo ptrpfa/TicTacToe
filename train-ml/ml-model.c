@@ -585,7 +585,10 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
         Mean Absolute Error for Training Data: 1.376389
     */
     int computer_player = 1;
-    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0, root_mean_square_error = 0, sum_abs_error = 0, mean_abs_error = 0;
+    float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0, root_mean_square_error = 0, sum_abs_error = 0, mean_abs_error = 0; 
+    // Variables for calculating the probability of error and confusion matrix values
+    // float sum_prob_error = 0, prob_error = 0;
+    // int true_win = 0, false_win = 0, true_draw = 0, false_draw = 0, true_loss = 0, false_loss = 0;
     // Loop through each training data
     for (int i = 0; i < TRAINING_SIZE; i++) {
         // Print training data
@@ -606,6 +609,35 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
         sum_square_error += pow(actual_score - predicted_score, 2);
         // Obtain sum of the absolute error
         sum_abs_error += fabs(predicted_score - actual_score);
+        // Obtain sum of errors (for probability of error calculations)
+        // sum_prob_error += (actual_score == predicted_score) ? 0 : 1;
+        // Check confusion matrix values
+        // switch ((int) actual_score) {
+        //     case 1: // win
+        //         if (actual_score == predicted_score) {
+        //             true_win++;
+        //         }
+        //         else {
+        //             false_win++;
+        //         }
+        //         break;
+        //     case 0: // draw
+        //         if (actual_score == predicted_score) {
+        //             true_draw++;
+        //         }
+        //         else {
+        //             false_draw++;
+        //         }
+        //         break;
+        //     case -1: // loss
+        //         if (actual_score == predicted_score) {
+        //             true_loss++;
+        //         }
+        //         else {
+        //             false_loss++;
+        //         }
+        //         break;
+        // };
         // Update ML model's weights
         updateWeights(learningRate, board_features, weights, actual_score, predicted_score);
         // Print training results
@@ -622,7 +654,10 @@ void trainModel(int train_data[TRAINING_SIZE][BOARDSIZE + 1], float weights[NO_F
     root_mean_square_error = sqrt(mean_square_error);
     // Calculate mean absolute error
     mean_abs_error = sum_abs_error / TRAINING_SIZE;
+    // Calculate probabilty of error
+    // prob_error = sum_prob_error / TRAINING_SIZE;
     printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
+    // printf("\nMean Squared Error for Training Data: %f\nRoot Mean Square Error for Training Data: %f\nMean Absolute Error for Training Data: %f\nSum of Errors: %f\nProbability of Errors: %f\nTrue Wins: %d\nFalse Wins: %d\nTrue Draws: %d\nFalse Draws: %d\nTrue Losses: %d\nFalse Losses: %d\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error, true_win, false_win, true_draw, false_draw, true_loss, false_loss);
 }
 
 // Function to test regression model against the testing dataset
@@ -658,6 +693,9 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
     */
     int computer_player = 1;
     float predicted_score = -1, actual_score = 0, sum_square_error = 0, mean_square_error = 0, root_mean_square_error = 0, sum_abs_error = 0, mean_abs_error = 0;
+    // Variables for calculating the probability of error and confusion matrix values
+    // float sum_prob_error = 0, prob_error = 0;
+    // int true_win = 0, false_win = 0, true_draw = 0, false_draw = 0, true_loss = 0, false_loss = 0;
     // Loop through each test data
     for (int i = 0; i < TEST_SIZE; i++) {
         // Print test data
@@ -674,6 +712,35 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
         sum_square_error += pow(actual_score - predicted_score, 2);
         // Obtain sum of the absolute error
         sum_abs_error += fabs(predicted_score - actual_score);
+        // Obtain sum of errors (for probability of error calculations)
+        // sum_prob_error += (actual_score == predicted_score) ? 0 : 1;
+        // Check confusion matrix values
+        // switch ((int) actual_score) {
+        //     case 1: // win
+        //         if (actual_score == predicted_score) {
+        //             true_win++;
+        //         }
+        //         else {
+        //             false_win++;
+        //         }
+        //         break;
+        //     case 0: // draw
+        //         if (actual_score == predicted_score) {
+        //             true_draw++;
+        //         }
+        //         else {
+        //             false_draw++;
+        //         }
+        //         break;
+        //     case -1: // loss
+        //         if (actual_score == predicted_score) {
+        //             true_loss++;
+        //         }
+        //         else {
+        //             false_loss++;
+        //         }
+        //         break;
+        // };
         // Check if model should be trained using the test data
         if (train_model == 1) {
             // Print initial weights
@@ -699,7 +766,10 @@ void testModel(int test_data[TEST_SIZE][BOARDSIZE + 1], float weights[NO_FEATURE
     root_mean_square_error = sqrt(mean_square_error);
     // Calculate the mean absolute error
     mean_abs_error = sum_abs_error / TEST_SIZE;
+    // Calculate probabilty of error
+    // prob_error = sum_prob_error / TEST_SIZE;
     printf("\nMean Squared Error for Test Data: %f\nRoot Mean Square Error for Test Data: %f\nMean Absolute Error for Test Data: %f\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error);
+    // printf("\nMean Squared Error for Test Data: %f\nRoot Mean Square Error for Test Data: %f\nMean Absolute Error for Test Data: %f\nSum of Errors: %f\nProbability of Errors: %f\nTrue Wins: %d\nFalse Wins: %d\nTrue Draws: %d\nFalse Draws: %d\nTrue Losses: %d\nFalse Losses: %d\n\n\n", mean_square_error, root_mean_square_error, mean_abs_error, sum_prob_error, prob_error, true_win, false_win, true_draw, false_draw, true_loss, false_loss);
 }
 
 // Function to simulate a specified number of games (Computer vs Computer) for the regression model to be updated
