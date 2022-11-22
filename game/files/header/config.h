@@ -32,13 +32,15 @@ extern int board_wins[8][3];                    // Array containing the legal bo
 
 // GTK GUI Variables
 extern const char *gamemode[];                  // Game mode options
-extern int ButtonPos[9][2];                     // Tic Tac Toe button positions
-extern GtkWidget *window;                       // GTK elements
-extern GtkWidget *headerlabel;
-extern GtkWidget *boardGrid;
+extern GtkWidget *gameModeMenu;                 // Game mode dropdown box
+extern GtkWidget *window; 
+extern GtkWidget *headerLabel;
 extern GtkWidget *settingGrid;
+extern GtkWidget *turnLabel;  
 extern GtkWidget *StartBtn;
-extern GtkWidget *gameModeMenu;                 
+extern GtkWidget *boardGrid;
+extern int ButtonPos[9][2];                     // Tic Tac Toe button positions
+extern GtkWidget *scoreGrid;
 
 // Machine Learning Variables
 extern int board_features[NO_FEATURES];                 // Array containing the feature values for the current board state
@@ -48,27 +50,25 @@ extern float learningRate;                              // Learning rate for ML 
 
 /* Function Prototypes */
 // Game Functions
-void BoardDesign();                                                                     // Function to create the Tic Tac Toe board design
-void MainGameController(GtkButton *button, gpointer data);                              // Main game controller function
-int checkPlayerData(char n);                                                            // Function for checking the player number of a given game piece
-int checkWin();                                                                         // Function to get the current board's status (win/lose/draw/in progress)
-void twoplayer(GtkButton *button, int data);                                            // Function to get inputs for 2 Player Mode
-int computerMove();                                                                     // Function to get the MiniMax computer input
-int minimax(int player);                                                                // MiniMax algorithm
-void DisplayWin(int result);                                                            // Function to display the game results (2 Player Mode)
-void DisplayWin2(int result);                                                           // Function to display the game results (1 Player Mode)
-void audio(const char *audio_file);                                                     // Function to play an audio sound effect
-void delay(float seconds);                                                              // Function to delay for a specified amount of seconds
-void miniaudio_init();
-void miniaudio_close();
+void MainGameController(GtkButton *button, gpointer data);                       // Main game controller function
+void delay(float seconds);                                                       // Function to delay for a specified amount of seconds
+int checkWin();                                                                  // Function to get the current board's status (win/lose/draw/in progress)
+void DisplayWin(int result);                                                     // Function to display the game results (2 Player Mode)
+void twoplayer(GtkButton *button, int data);                                     // Function to get inputs for 2 Player Mode
+int computerMove();                                                              // Function to get the MiniMax computer input
+int minimax(int player);                                                         // MiniMax algorithm
+
 // GTK GUI Functions
 void activate(GtkApplication* app, gpointer user_data);                          // Function to initialise GTK elements
 void CreateCSS(GtkWidget *widget, const char *class_name);                       // Function to set the CSS styling for the GUI
-void Designer();                                                                 // Design controller for the GUI
+void DesignModel();                                                              // Design controller for the GUI
 void SettingDesign();                                                            // Function for the design of the settings bar
 void modeController(GtkDropDown  *dropdown, gpointer *data);                     // Function for controlling the game mode selection
-void Start(GtkWidget *widget, gpointer *data);                                   // Start function
+void Start(GtkWidget *startbtn, gpointer *data);                                 // Start function
 void Restart();                                                                  // Restart function
+void BoardDesign();                                                              // Function to create the Tic Tac Toe board design
+void Scoreboard();                                                               // Scoreboard Feature
+void SetScore();                                                                 // Set scores on Scoreboard
 
 // Machine Learning Functions
 void getBoardFeatures(int gameState[BOARDSIZE], int playerNo);                                                                                      // Function to get the feature values for the current board's state
@@ -79,3 +79,8 @@ int randomInput(int gameState[BOARDSIZE], int playerNo);                        
 void readWeights();                                                                                                                                 // Function to read the ML model's weights from the settings file                                                                                                       
 void writeWeights();                                                                                                                                // Function to write the ML model's weights to the settings file   
 void updateWeights(float learningConstant, int features[NO_FEATURES], float weights[NO_FEATURES], float target_actual, float target_estimated);     // Function to update the weights for the ML model features
+//MiniAudio Functions
+void miniaudio_init();
+void miniaudio_close();
+void audio(const char *audio_file);                                                     // Function to play an audio sound effect
+

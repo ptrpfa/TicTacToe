@@ -16,76 +16,56 @@ void MainGameController(GtkButton *button, gpointer data){
     int starting_board_features_ai[NO_FEATURES] = {};       // Array to keep a copy of the starting board's features before the computer's move
     float starting_score_player, intermediate_score_player, final_score_player, starting_score_ai, intermediate_score_ai, final_score_ai;
     
-    /***** Game Mode Options *******/
-    //  -1: Game just started      //
-    //  1: 2 Player Mode           //
-    //  2: 1 Player Mode (Easy)    //
-    //  3: 1 Player Mode (Medium)  // 
-    //  4: 1 Player Mode (Hard)    //
-    /*******************************/
-    const char *btnText = gtk_button_get_label(GTK_BUTTON(StartBtn));
-    if(strcmp(btnText,"START") == 0){
-        return;
-    }
+    // Game Mode Options: -1: Game just started, 1: 2 Player Mode, 2: 1 Player Mode (Easy), 3: 1 Player Mode (Medium), 4: 1 Player Mode (Hard)
     switch(gameModeOption){
-        /* 2 Player Mode */
-        case 1:             
-            twoplayer(button, GPOINTER_TO_INT(data));       // Get player's move
-            result = checkWin();                            // Check the board's status (win/lose/draw/in progress)
+        case 1: 
+            /* 2 Player Mode */
+            twoplayer(button, GPOINTER_TO_INT(data));   // Get player's move
+            
+            // Check the board's status (win/lose/draw/in progress)
+            result = checkWin();                        
             if(result !=0){
-                DisplayWin(result);                         // Display results once game has ended
-                SetScore(result);
+                // Display results once game has ended
+                DisplayWin(result);
             } 
             // Break out of case
             break;
-            
-        /* One Player Mode: Easy (against dumb AI, random moves) */    
-        case 2: 
+        case 2: /* One Player Mode: Easy (against dumb AI, random moves) */
             /* First Player's Move */
-            gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(button)), 
-                        "<span color=\"#ffb300\">X</span>");            // Set X on board
-            audio(P1_SOUND);                                            // Play sound effect for Player 1
-            move_index = GPOINTER_TO_INT(data);                         // Get the player's move
-            board[move_index] = -1;                                     // Set the player's move on the board
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);            // Set the button to be non clickable after the player's move
-            gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#87dcfa\" size=\"16pt\">O's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-            gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel            
-            /* First Player's Move */
+            gtk_button_set_label(button, "X");          // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                     // Add CSS class to button
+            audio(P1_SOUND);                                        // Play sound effect for Player 1
+            move_index = GPOINTER_TO_INT(data);                     // Get the player's move
+            board[move_index] = -1;                                 // Set the player's move on the board
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);        // Set the button to be non clickable after the player's move
 
             // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
-            if(result == 0){                                            // Game still in progress
+            if(result == 0){ // Game still in progress
                 /* Dumb AI (Random)'s Move */
-                int move = randomInput(board, 1);                       // Get random move
-                delay(TIME_DELAY);                                      // Wait for a set period of time before making the move
-                board[move] = 1;                                        // Set random move
-                
+                int move = randomInput(board, 1);           // Get random move
+                delay(TIME_DELAY);                          // Wait for a set period of time before making the move
+                board[move] = 1;                            // Set random move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(GTK_BUTTON(buttonChild))),
-                                    "<span color=\"#87dcfa\">O</span>");//Set O on board
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O");     // Set the button text
+                CreateCSS(GTK_WIDGET(buttonChild),"xo");                // Add CSS class to button
                 audio(AI_SOUND3);                                       // Play sound effect for Computer Player
                 gtk_widget_set_sensitive(buttonChild, 0);               // Set the button to be non clickable after the computer's move
-                gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#ffb300\" size=\"16pt\">X's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-                gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
-
+                
                 // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){
-                    DisplayWin(result);                                // Display results once game has ended
-                    SetScore(result);
+                    // Display results once game has ended
+                    DisplayWin2(result);
                 }
             }
             else{
-                DisplayWin(result);                                    // Display results after player wins
-                SetScore(result);
+                // Display results once game has ended
+                DisplayWin2(result);
             }
             // Break out of case
             break;
-        
-        /* One Player Mode: Medium (against continual learning Linear Regression Neural Network ML Model) */
-        case 3:  
+        case 3:  /* One Player Mode: Medium (against continual learning Linear Regression Neural Network ML Model) */
             // Get the features and score of the current board before the first player's move
             getBoardFeatures(board, base_player);                                   // Get pre-move board features for the base player
             starting_score_player = evaluateBoard(board_features, model_weights);   // Get pre-move board score
@@ -95,16 +75,12 @@ void MainGameController(GtkButton *button, gpointer data){
             }
 
             /* First Player's Move */
-            gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(button)), 
-                        "<span color=\"#ffb300\">X</span>");                        // Set X on board
-            audio(P1_SOUND);                                                        // Play sound effect for Player 1
-            move_index = GPOINTER_TO_INT(data);                                     // Get the player's move
-            board[move_index] = -1;                                                 // Set the player's move on the board
-            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);                        // Set the button to be non clickable after the player's move
-            gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#87dcfa\" size=\"16pt\">O's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-            gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);        // Change the turnLabel
-            /* First Player's Move */
+            gtk_button_set_label(button, "X");      // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                 // Add CSS class to button
+            audio(P1_SOUND);                                    // Play sound effect for Player 1
+            move_index = GPOINTER_TO_INT(data);                 // Get the player's move
+            board[move_index] = -1;                             // Set the player's move on the board
+            gtk_widget_set_sensitive(GTK_WIDGET(button), 0);    // Set the button to be non clickable after the player's move
 
             // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
@@ -124,28 +100,19 @@ void MainGameController(GtkButton *button, gpointer data){
                 }
 
                 /* ML Model's Move */
-                int move = modelInput(model_weights, 1);            // Get ML Model's move
-                delay(TIME_DELAY);                                  // Wait for a set period of time before making the move
-                board[move] = 1;                                    // Set ML model's move
+                int move = modelInput(model_weights, 1);        // Get ML Model's move
+                delay(TIME_DELAY);                              // Wait for a set period of time before making the move
+                board[move] = 1;                                // Set ML model's move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(GTK_BUTTON(buttonChild))),
-                                    "<span color=\"#87dcfa\">O</span>");    //Set O on board
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O"); // Set the button text
+                CreateCSS(buttonChild,"xo");            // Add CSS class to button
                 audio(AI_SOUND);                                    // Play sound effect for Computer Player
                 gtk_widget_set_sensitive(buttonChild, 0);           // Set the button to be non clickable after the computer's move
-                gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#ffb300\" size=\"16pt\">X's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-                gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
-                /* ML Model's Move */
-
+                
                 // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){ // End of game
-                    /***** Board Status *********/
-                    //  0:  Game in progress    //
-                    //  -1: Player 1 Wins       //
-                    //  1:  Player 2 Wins       //
-                    //  2:  Game Draw           //
-                    /****************************/
+                    // Set game results (2: Draw, -1: Player 1 won, 1: Player 2 won, 0: In progress)
                     if (result == 2){
                         game_result = 0; // Draw for Player 1
                     }
@@ -162,8 +129,7 @@ void MainGameController(GtkButton *button, gpointer data){
                     updateWeights(learningRate, starting_board_features_ai, model_weights, game_result, final_score_ai); // game_result is the actual value, final_score (ai) is the predicted value
 
                     // Display results once game has ended
-                    DisplayWin(result);
-                    SetScore(result);
+                    DisplayWin2(result);
                 }
                 else { // Game still in progress
                     // Get the features and score of the intermediate board, after the computer player's move
@@ -174,12 +140,7 @@ void MainGameController(GtkButton *button, gpointer data){
                 }
             }
             else { // End of game
-                /***** Board Status *********/
-                //  0:  Game in progress    //
-                //  -1: Player 1 Wins       //
-                //  1:  Player 2 Wins       //
-                //  2:  Game Draw           //
-                /****************************/
+                // Set game results (2: Draw, -1: Player 1 won, 1: Player 2 won, 0: In progress)
                 if (result == 2){
                     game_result = 0; // Draw for Player 1
                 }
@@ -196,57 +157,45 @@ void MainGameController(GtkButton *button, gpointer data){
                 updateWeights(learningRate, starting_board_features_player, model_weights, game_result, final_score_player); // game_result is the actual value, final_score (player) is the predicted value
 
                 // Display results once game has ended
-                DisplayWin(result);
-                SetScore(result);
+                DisplayWin2(result);
             }
             // Break out of case
             break;
-
-        /* One Player Mode: Hard (against Minimax Algorithm) */
-        case 4:  
+        case 4:  /* One Player Mode: Hard (against Minimax Algorithm) */
             /* First Player's Move */
-            gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(button)), 
-                        "<span color=\"#ffb300\">X</span>");    // Set X on board
+            gtk_button_set_label(button, "X");      // Change the button label
+            CreateCSS(GTK_WIDGET(button),"xo");                 // Add CSS class to button
             audio(P1_SOUND);                                    // Play sound effect for Player 1
             move_index = GPOINTER_TO_INT(data);                 // Get the player's move
             board[move_index] = -1;                             // Set the player's move on the board
             gtk_widget_set_sensitive(GTK_WIDGET(button), 0);    // Set the button to be non clickable after the player's move
-            gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#87dcfa\" size=\"16pt\">O's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-            gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
-            /* First Player's Move */   
-                        
+
             // Check the board's status (win/lose/draw/in progress)
             result = checkWin();
             if(result == 0){ // Game still in progress
-                /* MiniMax Algorithm's Move */      
-                int move = computerMove();                          // Get MiniMax Algorithm's move
-                delay(TIME_DELAY);                                  // Wait for a set period of time before making the move
-                board[move] = 1;                                    // Set MiniMax Algorithm's move
+                /* MiniMax Algorithm's Move */
+                int move = computerMove();          // Get MiniMax Algorithm's move
+                delay(TIME_DELAY);                  // Wait for a set period of time before making the move
+                board[move] = 1;                    // Set MiniMax Algorithm's move
                 GtkWidget *buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[move][0], ButtonPos[move][1]);
-                gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(GTK_BUTTON(buttonChild))),
-                                    "<span color=\"#87dcfa\">O</span>");    //Set O on board
+                gtk_button_set_label(GTK_BUTTON(buttonChild), "O"); // Set the button text
+                CreateCSS(GTK_WIDGET(buttonChild),"xo");            // Add CSS class to button
                 audio(AI_SOUND2);                                   // Play sound effect for Computer Player
                 gtk_widget_set_sensitive(buttonChild, 0);           // Set the button to be non clickable after the computer's move
-                gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#ffb300\" size=\"16pt\">X's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
-                gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
-
+                
                 // Check the board's status (win/lose/draw/in progress)
                 result = checkWin();
                 if(result != 0){
                     // Display results once game has ended
-                    DisplayWin(result);
-                    SetScore(result);
+                    DisplayWin2(result);
                 }
             }
             else{
                 // Display results once game has ended
-                DisplayWin(result);
-                SetScore(result);
+                DisplayWin2(result);
             }
             // Break out of case
-            break;    
+            break;
     }
 }
 
@@ -263,31 +212,25 @@ int checkPlayerData(char n){
 
 // Function to get the current board's status (win/lose/draw/in progress)
 int checkWin() {
-    /***** Board Status *********/
-    //  0:  Game in progress    //
-    //  -1: Player 1 Wins       //
-    //  1:  Player 2 Wins       //
-    //  2:  Game Draw           //
-    /****************************/
+    // Default board status is 2 (draw) [2: Draw, -1: Player 1 won, 1: Player 2 won, 0: In progress]
     int board_status = 2;
     // Loop through each legal win configuration
     for(int i = 0; i < 8; ++i) {
-        // Check if the first element is blank
-        // And check whether all positions of the board configuration matches the current board state
+        // Check if the first element is blank, and whether all positions of the board configuration matches the current board state
         if (board[board_wins[i][0]] != 0 && board[board_wins[i][0]] == board[board_wins[i][1]] && board[board_wins[i][0]] == board[board_wins[i][2]]){ 
             board_status = board[board_wins[i][2]];     // Set board status to winning player ('-1' or '1')
             return board_status;                        // Return board status immediately once a win is found
         }
     }
-    
-    for (int i = 0; i < BOARDSIZE; i++){                // Check for any blank cells (game is still in progress)
+    // Check for any blank cells (game is still in progress)
+    for (int i = 0; i < BOARDSIZE; i++){
         if(board[i] == 0){
             board_status = 0;
-            return board_status;                        // indicate that game is still in progress
+            return board_status; // indicate that game is still in progress
         }
     }
-
-    return board_status;                                // Return default board status if no wins are found (draw)
+    // Return default board status if no wins are found (draw)
+    return board_status;
 }
 
 // Function to display the game results (2 Player Mode)
@@ -296,35 +239,56 @@ void DisplayWin(int result){
     GtkWidget* buttonChild;
     switch(result){
         case 2:
-            gtk_label_set_text(GTK_LABEL(headerLabel), "\nIT'S A DRAW!\n");
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\nIT'S A DRAW!\n");
             audio(DRAW_SOUND);
             break;
         case -1:
-            gtk_label_set_text(GTK_LABEL(headerLabel), "\nPLAYER 1 WINS!\n");
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\nPLAYER 1 WINS!\n");
+            //Make board unclickable till restart button is clicked
             for(int i=0; i < 9;i++){
                 buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[i][0], ButtonPos[i][1]);
-                gtk_widget_set_sensitive(buttonChild, 0);     //Make board unclickable till restart button is clicked
+                gtk_widget_set_sensitive(buttonChild, 0);
             }
             audio(WIN_SOUND);
             break;
         case 1:
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\nPLAYER 2 WINS!\n");
             for(int i=0; i < 9;i++){
                 buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[i][0], ButtonPos[i][1]);
-                gtk_widget_set_sensitive(buttonChild, 0);      //Make board unclickable till restart button is clicked   
+                gtk_widget_set_sensitive(buttonChild, 0);
             }
-
-            if(gameModeOption == 1){   //2-Player Mode
-                gtk_label_set_text(GTK_LABEL(headerLabel), "\nPLAYER 2 WINS!\n");
-                audio(WIN_SOUND);
-            }else{                     //AI Mode
-                gtk_label_set_text(GTK_LABEL(headerLabel), "\n YOU LOST!\n");
-                audio(LOSE_SOUND);
-            }
+            audio(WIN_SOUND);
             break;
     }
 
-    gtk_label_set_markup(GTK_LABEL(turnLabel), 
-                    "<span color=\"#ffb300\">X</span><span color=\"#87dcfa\">O</span>");  //Reset turnLabel
-
 }
 
+// Function to display the game results (1 Player Mode)
+void DisplayWin2(int result){
+
+    GtkWidget* buttonChild;
+    switch(result){
+        case 2:
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\nIT'S A DRAW\n");
+            audio(DRAW_SOUND);
+            break;
+        case -1:
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\nPLAYER 1 WINS!\n");
+            //Make board unclickable till restart button is clicked
+            for(int i=0; i < 9;i++){
+                buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[i][0], ButtonPos[i][1]);
+                gtk_widget_set_sensitive(buttonChild, 0);
+            }
+            audio(WIN_SOUND);
+            break;
+        case 1:
+            gtk_label_set_text(GTK_LABEL(headerlabel), "\n YOU LOST!\n");
+            for(int i=0; i < 9;i++){
+                buttonChild = gtk_grid_get_child_at(GTK_GRID(boardGrid), ButtonPos[i][0], ButtonPos[i][1]);
+                gtk_widget_set_sensitive(buttonChild, 0);
+            }
+            audio(LOSE_SOUND);
+            break;
+    }
+
+}

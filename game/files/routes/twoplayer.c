@@ -2,33 +2,29 @@
 #include "../header/config.h"       // Include configuration file
 
 /* Two Player Mode Function */
-// Function to get the users' inputs for 2 Player Mode
 void twoplayer(GtkButton *button, int data){
-    // Set the correct Label for the player on press button
+    int pos = data;
+
     if(player == -1){ // First Player
-        // Play sound effect for first player
-        audio(P1_SOUND);
-        // Change the button label
-        gtk_button_set_label(button, "X");
-        CreateCSS(GTK_WIDGET(button),"xo");
-        // Update the global board;
-        int pos = data;
-        board[pos] = -1;
-        // Set the button to be non clickable after the move
-        gtk_widget_set_sensitive(GTK_WIDGET(button), 0); 
-        player = 1; // Change to the next player (Player 2)
+        audio(P1_SOUND);                                                    // Play sound effect for first player
+        gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(button)), 
+                             "<span color=\"#ffb300\">X</span>");           // Set X on board
+        board[pos] = -1;                                                    // Update the global board
+        gtk_widget_set_sensitive(GTK_WIDGET(button), 0);                    // Set the button to be non clickable after the move
+        gtk_label_set_markup(GTK_LABEL(turnLabel), 
+                    "<span color=\"#87dcfa\" size=\"16pt\">O's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
+        gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
+        player = 1;                                                         // Change to the next player (Player 2)
     }
     else if(player == 1){ // Second Player
-        // Play sound effect for the second player
-        audio(P2_SOUND);
-        // Change the button label
-        gtk_button_set_label(button, "O");
-        CreateCSS(GTK_WIDGET(button),"xo");
-        // Update the global board
-        int pos = data;
-        board[pos] = 1;
-        // Set the button to be non clickable after the move
-        gtk_widget_set_sensitive(GTK_WIDGET(button), 0); 
-        player = -1; // Change to the next player (Player 1)
+        audio(P2_SOUND);                                                    // Play sound effect for the second player
+        gtk_label_set_markup(GTK_LABEL(gtk_button_get_child(button)),
+                            "<span color=\"#87dcfa\">O</span>");
+        board[pos] = 1;                                                     // Update the global board
+        gtk_label_set_markup(GTK_LABEL(turnLabel), 
+                    "<span color=\"#ffb300\" size=\"16pt\">X's\n</span><span color=\"slategrey\" size=\"16pt\">Turn</span>");       
+        gtk_label_set_justify(GTK_LABEL(turnLabel), GTK_JUSTIFY_CENTER);    // Change the turnLabel
+        gtk_widget_set_sensitive(GTK_WIDGET(button), 0);                    // Set the button to be non clickable after the move
+        player = -1;                                                        // Change to the next player (Player 1)
     }
 }
