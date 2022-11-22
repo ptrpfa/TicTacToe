@@ -328,30 +328,3 @@ void DisplayWin(int result){
 
 }
 
-void message_dialog_clicked(){
-    GtkWidget *dialog;
-
-    dialog = gtk_message_dialog_new_with_markup (GTK_WINDOW (window),
-                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                    GTK_MESSAGE_INFO,
-                                    GTK_BUTTONS_OK,
-                                    "<span size=\"20pt\">Player <span color=\"#ffb300\">X</span> Wins!</span>");
-
-    // dialog = gtk_dialog_new_with_buttons("Tic-Tac-Toe",
-    //                                     GTK_WINDOW (window),
-    //                                     GTK_DIALOG_DESTROY_WITH_PARENT,
-    //                                     ("OK"),
-    //                                    GTK_RESPONSE_NONE,
-    //                                    NULL);
-
-    // GtkWidget *content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
-    // GtkWidget *label = gtk_label_new(NULL);
-    // gtk_label_set_markup(GTK_LABEL(label),
-    //                     "<span size=\"50pt\">Player <span color=\"#ffb300\">X</span> Wins!</span>");
-
-    // gtk_box_append (GTK_BOX (content_area), label);                    
-    g_signal_connect (dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
-    gtk_widget_show (dialog);
-
-    Restart(); //Clear the board and restart the game
-}
