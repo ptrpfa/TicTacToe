@@ -327,4 +327,3 @@ void DisplayWin(int result){
                     "<span color=\"#ffb300\">X</span><span color=\"#87dcfa\">O</span>");  //Reset turnLabel
 
 }
-

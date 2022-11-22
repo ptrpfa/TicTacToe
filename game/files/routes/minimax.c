@@ -48,4 +48,3 @@ int computerMove(){
     //returns a score based on minimax tree at a given node.
     return move;
 }
-

@@ -2,9 +2,9 @@
 #include "../header/config.h"       // Include configuration file
 
 //Global Var
-int board_features[NO_FEATURES];                                                                                                                        // Array containing the feature values for the current board state
-float model_weights[NO_FEATURES] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};                                                                               // Array containing weights for each feature
-int possible_moves[BOARDSIZE][BOARDSIZE + 1];                                                                                                           // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
+int board_features[NO_FEATURES];                                        // Array containing the feature values for the current board state
+float model_weights[NO_FEATURES] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // Array containing weights for each feature
+int possible_moves[BOARDSIZE][BOARDSIZE + 1];                           // 2D array containing possible moves for model to choose from (last element of each inner array represents the move)                                        
 float learningRate = 0.001; 
 
 /* Machine Learning Model Functions */

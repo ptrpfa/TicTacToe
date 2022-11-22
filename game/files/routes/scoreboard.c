@@ -39,7 +39,7 @@ void Scoreboard(){
     CreateCSS(scoreTie, "scoreTie");
     CreateCSS(scoreO, "scoreO");
     gtk_grid_attach (GTK_GRID (scoreGrid), scoreX, 0, 0, 3, 2);            //Set to Grid
-    gtk_grid_attach (GTK_GRID (scoreGrid), scoreTie, 3, 0, 3, 2);            //Set to Grid
+    gtk_grid_attach (GTK_GRID (scoreGrid), scoreTie, 3, 0, 3, 2);          //Set to Grid
     gtk_grid_attach (GTK_GRID (scoreGrid), scoreO, 6, 0, 3, 2);            //Set to Grid
 }
 

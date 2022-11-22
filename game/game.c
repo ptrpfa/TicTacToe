@@ -1,6 +1,6 @@
 #include <stdlib.h>                 // Include standard library
 #include <gtk/gtk.h>                // Include GTK library for GUI
-#include "files/header/config.h"       // Include configuration file
+#include "files/header/config.h"    // Include configuration file
 
 //Global Variable Init
 int gameModeOption = -1; 
@@ -26,6 +26,3 @@ int main (int argc, char**argv) {
     // End of program
     return status;
 }
-
-
-
