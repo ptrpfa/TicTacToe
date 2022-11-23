@@ -22,8 +22,6 @@ This is a 3x3 Tic Tac Toe program using the C programming language, with 4 diffe
 
 ### Installation of GTK4 for Windows
 ---
-_Below is the instruction for windows._
-
 1. Install the latest version MSYS2 [from their website](https://www.msys2.org/).
 2. Navigate to ```C:\msys2\``` and launch ```mingw64.exe```.
 3. In the MSYS2 command prompt, enter the following
@@ -165,7 +163,9 @@ run_win.sh (script for running program - Mac)
    gcc -o tictactoe game.c files/routes/*.c -mwindows -IC:/msys64/mingw64/include/gtk-4.0 -IC:/msys64/mingw64/include/pango-1.0 -IC:/msys64/mingw64/include -IC:/msys64/mingw64/include/glib-2.0 -IC:/msys64/mingw64/lib/glib-2.0/include -IC:/msys64/mingw64/include/harfbuzz -IC:/msys64/mingw64/include/freetype2 -IC:/msys64/mingw64/include/libpng16 -IC:/msys64/mingw64/include/fribidi -IC:/msys64/mingw64/include/cairo -IC:/msys64/mingw64/include/lzo -IC:/msys64/mingw64/include/pixman-1 -IC:/msys64/mingw64/include/gdk-pixbuf-2.0 -IC:/msys64/mingw64/include/graphene-1.0 -IC:/msys64/mingw64/lib/graphene-1.0/include -IC:/msys64/mingw64/include/pango-1.0 -LC:/msys64/mingw64/lib -lgtk-4 -lpangowin32-1.0 -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -lgdk_pixbuf-2.0 -lcairo-gobject -lcairo -lgraphene-1.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl
    ```
 3. Run the program!<br>
-   ```tictactoe.exe```
+   ```sh
+   tictactoe.exe
+   ```
 
 Alternatively, you can directly run *run_win.bat* in Command Prompt to compile and run the executable created.
   
@@ -173,8 +173,12 @@ Alternatively, you can directly run *run_win.bat* in Command Prompt to compile a
 ---
 1. Download source code 
 2. Compile the program.<br>
-   gcc `pkg-config --cflags --libs gtk4` -o tictactoe game.c ./files/routes/*.c`<br><br>
+   ```sh
+   gcc `pkg-config --cflags --libs gtk4` -o tictactoe game.c ./files/routes/*.c`
+   ```
 3. Run the program!<br>
-  ./tictactoe<br><br>
+   ```sh 
+   ./tictactoe
+   ```
   
 Alternatively, the 'run_mac.sh' script can be executed on a terminal to compile and run the program directly.
