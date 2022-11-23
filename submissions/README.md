@@ -1,5 +1,14 @@
-# CSC1103-TicTacToe
-CSC1103 Mini Project
+# CSC1103 Mini Project (Tic Tac Toe)
+
+### CSC1103 P3 Group 9
+<p>
+Group Members:<br>
+2200959  Peter Febrianto Afandy<br>
+2200692  Adrian Pang Zi Jian<br>
+2201014  Tng Jian Rong<br>
+2201018  Jeffrey Yap Wan Lin<br>
+2201945  Ong Si Hui<br>
+</p>
 
 List of Contents
 - [Getting Started](#getting-started)
