@@ -165,7 +165,7 @@ run_win.sh (script for running program - Mac)
    tictactoe.exe
    ```
 
-Alternatively, you can directly run *run_win.bat* in Command Prompt to compile and run the executable created.
+Alternatively, you can directly run ```run_win.bat``` in Command Prompt to compile and run the executable created.
   
 ### Program Usage for MacOS
 ---
@@ -179,4 +179,4 @@ Alternatively, you can directly run *run_win.bat* in Command Prompt to compile a
    ./tictactoe
    ```
   
-Alternatively, the 'run_mac.sh' script can be executed on a terminal to compile and run the program directly.
+Alternatively, the ```run_mac.sh``` script can be executed on a terminal to compile and run the program directly.
