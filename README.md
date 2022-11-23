@@ -116,7 +116,7 @@ game/ (contains main program, source and header files)
 train-ml/ (multi-linear regression model training files)
 ```
 
-In ```game```, we have the following files:
+In ```game/```, we have the following files:
 ```
 files/header/config.h (configuration file)
 
