@@ -101,8 +101,6 @@ This is a 3x3 Tic Tac Toe program using the C programming language, with 4 diffe
 
 ### Installation of GTK4 for MacOS
 ---
-_Below is the instruction for MacOS._
-
 1. Install GTK4 using Homebrew by running the following command
    ```sh
    brew install gtk4
