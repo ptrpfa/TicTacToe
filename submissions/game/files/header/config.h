@@ -83,4 +83,3 @@ void updateWeights(float learningConstant, int features[NO_FEATURES], float weig
 void miniaudio_init();
 void miniaudio_close();
 void audio(const char *audio_file); // Function to play an audio sound effect
-
