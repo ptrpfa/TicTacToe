@@ -1,13 +1,13 @@
-# CSC1103 Mini Project (Tic Tac Toe)
+# C-based Tic Tac Toe Game
 
-### CSC1103 P3 Group 9
+### Group 9
 <p>
 Group Members:<br>
-2200959  Peter Febrianto Afandy<br>
-2200692  Adrian Pang Zi Jian<br>
-2201014  Tng Jian Rong<br>
-2201018  Jeffrey Yap Wan Lin<br>
-2201945  Ong Si Hui<br>
+Peter Febrianto Afandy<br>
+Adrian Pang Zi Jian<br>
+Tng Jian Rong<br>
+Jeffrey Yap Wan Lin<br>
+Ong Si Hui<br>
 </p>
 
 List of Contents
